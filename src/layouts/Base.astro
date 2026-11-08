@@ -35,10 +35,34 @@ const pageUrl = new URL(Astro.url.pathname, Astro.site).href;
     <meta name="twitter:image" content={cardUrl} />
     {noindex && <meta name="robots" content="noindex, nofollow" />}
     <link rel="preload" href={latin400} as="font" type="font/woff2" crossorigin />
+    <script is:inline>
+      // Runs before first paint so nothing flashes. Same query as src/scripts/reduced-motion.ts.
+      // Motion is only armed when reduced motion is off; the intro only when this session hasn't seen it.
+      (function () {
+        try {
+          if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+          var root = document.documentElement;
+          root.dataset.reveal = "ready";
+          if (!sessionStorage.getItem("intro-played")) root.dataset.intro = "pending";
+        } catch (e) {}
+      })();
+    </script>
     <link rel="preload" href={latin700} as="font" type="font/woff2" crossorigin />
   </head>
   <body>
+    <div class="intro" data-intro-layer aria-hidden="true">
+      <div class="intro__inner">
+        <p class="intro__name">{site.name}</p>
+        <ul class="intro__steps" role="list">
+          <li>build <span>✓</span></li>
+          <li>test <span>✓</span></li>
+          <li>deploy <span>✓</span></li>
+        </ul>
+        <span class="intro__bar"></span>
+      </div>
+    </div>
     <slot />
     <ContactBlock site={site} />
+    <script>import "../scripts/motion";</script>
   </body>
 </html>

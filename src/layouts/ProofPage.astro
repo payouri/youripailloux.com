@@ -21,7 +21,7 @@ const sections = headings.filter((h) => h.depth === 2).map((h) => ({ slug: h.slu
     </a>
     {sections.length > 0 && <SectionMap sections={sections} />}
     <article class="case">
-      <h1 class="case__title">{entry.title}</h1>
+      <h1 class="case__title" style={`view-transition-name: title-${entry.slug}`}>{entry.title}</h1>
       <p class="case__context" data-context>{entry.context.employer} · {entry.context.year}</p>
       <p class="case__support">{supportLabel[entry.support]}</p>
       <p class="case__summary" data-summary>{entry.summary}</p>
@@ -44,7 +44,7 @@ const sections = headings.filter((h) => h.depth === 2).map((h) => ({ slug: h.slu
       <p class="case__attribution" data-attribution>{entry.attribution}</p>
     </article>
     {next && (
-      <nav class="next" aria-label="Next proof">
+      <nav class="next" aria-label="Next proof" data-reveal>
         <a href={`/${next.slug}`} data-next>
           <span class="next__label">Next</span>
           <span class="next__title">{next.title}<span class="next__arrow" aria-hidden="true">→</span></span>

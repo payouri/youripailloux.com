@@ -10,7 +10,7 @@ const { entries } = Astro.props;
     <ul class="proof__list" role="list">
       {entries.map((e) =>
         e.kind === "shelf" ? (
-          <li class="shelf" data-kind="shelf">
+          <li class="shelf" data-kind="shelf" data-reveal>
             <a class="shelf__link" href={e.href}>
               <ProofIcon entry={e} />
               <span class="shelf__path">{e.path}</span>
@@ -19,11 +19,11 @@ const { entries } = Astro.props;
             </a>
           </li>
         ) : (
-          <li class="row" data-kind={e.kind}>
+          <li class="row" data-kind={e.kind} data-reveal>
             <a class="row__link" href={`/${e.slug}`}>
               <span class="row__icon"><ProofIcon entry={e} /></span>
               <span class="row__main">
-                <span class="row__title">{e.title}</span>
+                <span class="row__title" style={`view-transition-name: title-${e.slug}`}>{e.title}</span>
                 <span class="row__support">{supportLabel[e.support]}</span>
                 <span class="row__summary">{e.summary}</span>
               </span>

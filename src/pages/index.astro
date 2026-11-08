@@ -17,8 +17,8 @@ const proof = await loadProof();
         <span data-byline>{site.name} · {site.role}</span>
       </a>
       <div class="claim">
-        <h1 class="claim__layer-1" data-claim-layer-1>{site.claim.layer1}</h1>
-        <p class="claim__layer-2" data-claim-layer-2>{site.claim.layer2}</p>
+        <h1 class="claim__layer-1" data-claim-layer-1 data-reveal>{site.claim.layer1}</h1>
+        <p class="claim__layer-2" data-claim-layer-2 data-reveal>{site.claim.layer2}</p>
       </div>
     </section>
     <ProofList entries={proof} />

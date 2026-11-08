@@ -3,7 +3,7 @@ import type { Site } from "../lib/site";
 interface Props { site: Site }
 const { site } = Astro.props;
 ---
-<section class="about" aria-labelledby="about-heading" data-about>
+<section class="about" aria-labelledby="about-heading" data-about data-reveal>
   <div class="about__text">
     <h2 id="about-heading" class="section-heading">About</h2>
     {site.about && <p class="about__prose" data-backstory>{site.about}</p>}

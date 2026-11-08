@@ -738,6 +738,63 @@
   @keyframes toast-timer { from { transform: scaleX(1); } to { transform: scaleX(0); } }
 }
 
+/* Motion: always an enhancement. Everything below is off under reduced motion,
+   so every element sits in its final state. */
+@media (prefers-reduced-motion: no-preference) {
+  /* Cross-document View Transitions on real page loads (ADR 0002). Browsers
+     without support ignore this and load the page. */
+  @view-transition { navigation: auto; }
+  ::view-transition-group(*) { animation-duration: 560ms; animation-timing-function: var(--ease-state); }
+  ::view-transition-old(root) { animation: vt-exit 160ms var(--ease-exit) both; }
+  ::view-transition-new(root) { animation: vt-enter 460ms var(--ease-enter) both; }
+  @keyframes vt-exit { to { opacity: 0; transform: translateY(-12px); } }
+  @keyframes vt-enter { from { opacity: 0; transform: translateY(18px); } }
+
+  /* Reveals: armed by the head script, released by reveal.ts. */
+  html[data-reveal="ready"] [data-reveal] {
+    transition: opacity 600ms var(--ease-enter) var(--reveal-delay, 0ms), transform 600ms var(--ease-enter) var(--reveal-delay, 0ms);
+  }
+  html[data-reveal="ready"] [data-reveal]:not([data-revealed]) {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+
+  /* Intro: first visit of a session only. */
+  .intro { display: none; }
+  html[data-intro="pending"] .intro,
+  html[data-intro="playing"] .intro,
+  html[data-intro="leaving"] .intro {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    display: grid;
+    place-items: center;
+    background: var(--color-paper);
+    color: var(--color-ink);
+  }
+  html[data-intro="leaving"] .intro {
+    transform: translateY(-100%);
+    transition: transform 560ms var(--ease-state);
+  }
+  .intro__inner { position: relative; display: grid; gap: 0.75rem; min-width: min(20rem, 80vw); }
+  .intro__name { font-size: var(--text-title); font-weight: 700; }
+  .intro__steps { list-style: none; margin: 0; padding: 0; display: flex; gap: 1.25rem; color: var(--color-ink-muted); }
+  .intro__steps li { opacity: 0; }
+  .intro__steps span { color: var(--color-chili); }
+  .intro__bar { height: 2px; background: var(--color-chili); transform: scaleX(0); transform-origin: left; }
+  html[data-intro="playing"] .intro__steps li,
+  html[data-intro="leaving"] .intro__steps li { opacity: 1; transition: opacity 200ms var(--ease-enter); }
+  html[data-intro="playing"] .intro__steps li:nth-child(1) { transition-delay: 200ms; }
+  html[data-intro="playing"] .intro__steps li:nth-child(2) { transition-delay: 450ms; }
+  html[data-intro="playing"] .intro__steps li:nth-child(3) { transition-delay: 700ms; }
+  html[data-intro="playing"] .intro__bar { animation: intro-bar 1000ms linear forwards; }
+  html[data-intro="leaving"] .intro__bar { transform: scaleX(1); }
+  @keyframes intro-bar { to { transform: scaleX(1); } }
+}
+@media (prefers-reduced-motion: reduce) {
+  .intro { display: none !important; }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     transition-duration: 0.01ms !important;
