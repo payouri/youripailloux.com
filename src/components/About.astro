@@ -1,0 +1,24 @@
+---
+import type { Site } from "../lib/site";
+interface Props { site: Site }
+const { site } = Astro.props;
+---
+<section class="about" aria-labelledby="about-heading" data-about>
+  <div class="about__text">
+    <h2 id="about-heading" class="section-heading">About</h2>
+    {site.about && <p class="about__prose" data-backstory>{site.about}</p>}
+    <p class="about__location" data-location>{site.location}</p>
+  </div>
+  {site.portrait && (
+    <img
+      class="about__portrait"
+      data-portrait
+      src={`/portrait/${site.portrait}`}
+      alt={`Portrait of ${site.name}`}
+      width="256"
+      height="256"
+      loading="lazy"
+      decoding="async"
+    />
+  )}
+</section>

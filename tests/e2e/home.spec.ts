@@ -19,6 +19,29 @@ test("the home page ends with the contact block", async ({ page }) => {
   await expect(last.getByRole("link", { name: "GitHub" })).toHaveAttribute("href", site.github);
 });
 
+test("home first screen holds the claim in two separate layers", async ({ page }) => {
+  await page.goto("/");
+  await expect(page.locator("[data-claim-layer-1]")).toHaveText(site.claim.layer1);
+  await expect(page.locator("[data-claim-layer-2]")).toHaveText(site.claim.layer2);
+  expect(await page.locator("[data-claim-layer-1]").evaluate((el) => el.contains(document.querySelector("[data-claim-layer-2]")))).toBe(false);
+});
+
+test("the About shows the backstory, location and portrait after the landing", async ({ page }) => {
+  await page.goto("/");
+  const about = page.locator("[data-about]");
+  await expect(about.locator("[data-backstory]")).toHaveText(site.about);
+  await expect(about.locator("[data-backstory] a")).toHaveCount(0);
+  await expect(about.locator("[data-location]")).toHaveText(site.location);
+  const portrait = about.locator("[data-portrait]");
+  await expect(portrait).toHaveAttribute("src", `/portrait/${site.portrait}`);
+  expect(await portrait.evaluate((img: HTMLImageElement) => img.complete && img.naturalWidth > 0 || new Promise((r) => { img.onload = () => r(true); img.onerror = () => r(false); }))).toBe(true);
+  const order = await page.evaluate(() => {
+    const a = document.querySelector("[data-claim-layer-1]")!, b = document.querySelector("[data-about]")!, c = document.querySelector("[data-contact-block]")!;
+    return [a.compareDocumentPosition(b) & Node.DOCUMENT_POSITION_FOLLOWING, b.compareDocumentPosition(c) & Node.DOCUMENT_POSITION_FOLLOWING];
+  });
+  expect(order.every(Boolean)).toBe(true);
+});
+
 test("fonts are self-hosted, Latin, and preloaded", async ({ page, baseURL }) => {
   const external: string[] = [];
   page.on("request", (r) => {
@@ -42,5 +65,11 @@ test("no client router or framework runtime ships", async ({ page }) => {
   const scripts: string[] = [];
   page.on("request", (r) => r.resourceType() === "script" && scripts.push(r.url()));
   await page.goto("/");
-  expect(scripts).toEqual([]);
+  // Only the contact block's small first-party script (copy, toast, clock); nothing from a framework or router.
+  for (const url of scripts) {
+    expect(url).toMatch(/\/_astro\/ContactBlock[^/]*\.js$/);
+    const body = await (await page.request.get(url)).text();
+    expect(body.length).toBeLessThan(4000);
+    expect(body).not.toMatch(/react|vue|svelte|ClientRouter|astro:transitions/);
+  }
 });

@@ -10,5 +10,11 @@
   "portrait": "fixture-portrait.png",
   "email": "pat@fixture.example",
   "linkedin": "https://www.linkedin.com/in/pat-fixture",
-  "github": "https://github.com/pat-fixture"
+  "github": "https://github.com/pat-fixture",
+  "links": [
+    {
+      "label": "Fixture Writing",
+      "href": "/fixture-writing"
+    }
+  ]
 }

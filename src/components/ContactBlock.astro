@@ -2,13 +2,108 @@
 import type { Site } from "../lib/site";
 interface Props { site: Site }
 const { site } = Astro.props;
+const links = site.links ?? [];
 ---
 <section class="contact" aria-labelledby="contact-line" data-contact-block>
   <div class="contact__inner">
     <p id="contact-line" class="contact__line">Want to talk? Write to me.</p>
-    <p class="contact__email"><a href={`mailto:${site.email}`}>{site.email}</a></p>
+    <p class="contact__email">
+      <a href={`mailto:${site.email}`} data-email>{site.email}</a>
+      <button type="button" class="copy" data-copy={site.email}>Copy</button>
+    </p>
     <p class="contact__elsewhere">
       Or find me on <a href={site.linkedin}>LinkedIn</a> and <a href={site.github}>GitHub</a>.
     </p>
+    {links.length > 0 && (
+      <ul class="contact__more" data-contact-links>
+        {links.map((l) => <li><a href={l.href}>{l.label}</a></li>)}
+      </ul>
+    )}
+    <p class="contact__meta">
+      <span class="clock" data-clock hidden>
+        <span class="clock__label">Montpellier</span>
+        <time class="clock__time" data-clock-time></time>
+        <span class="clock__note" data-clock-note></span>
+      </span>
+      <span class="contact__hint">Psst. Press <kbd>?</kbd></span>
+    </p>
+  </div>
+  <div class="toast" role="status" data-toast>
+    <span data-toast-text></span>
+    <span class="toast__bar" aria-hidden="true"></span>
   </div>
 </section>
+
+<script>
+  const TOAST_MS = 2400;
+  const toast = document.querySelector<HTMLElement>("[data-toast]");
+  const toastText = toast?.querySelector<HTMLElement>("[data-toast-text]");
+  let toastTimer: number | undefined;
+  let buttonTimer: number | undefined;
+
+  function showToast(message: string) {
+    if (!toast || !toastText) return;
+    clearTimeout(toastTimer);
+    toast.removeAttribute("data-open");
+    void toast.offsetWidth; // restart the timer bar when shown again
+    toastText.textContent = message;
+    toast.setAttribute("data-open", "");
+    toastTimer = window.setTimeout(() => {
+      toast.removeAttribute("data-open");
+      toastText.textContent = "";
+    }, TOAST_MS);
+  }
+
+  async function copy(text: string): Promise<boolean> {
+    try {
+      await navigator.clipboard.writeText(text);
+      return true;
+    } catch {
+      const area = document.createElement("textarea");
+      area.value = text;
+      area.setAttribute("readonly", "");
+      area.style.position = "fixed";
+      area.style.opacity = "0";
+      document.body.append(area);
+      area.select();
+      let ok = false;
+      try { ok = document.execCommand("copy"); } catch {}
+      area.remove();
+      return ok;
+    }
+  }
+
+  document.querySelectorAll<HTMLButtonElement>("[data-copy]").forEach((button) => {
+    const label = button.textContent ?? "Copy";
+    button.addEventListener("click", async () => {
+      const ok = await copy(button.dataset.copy ?? "");
+      showToast(ok ? "Copied. Your move." : "Couldn't copy. Select the address instead.");
+      if (!ok) return;
+      clearTimeout(buttonTimer);
+      button.textContent = "Copied";
+      button.setAttribute("data-done", "");
+      buttonTimer = window.setTimeout(() => {
+        button.textContent = label;
+        button.removeAttribute("data-done");
+      }, TOAST_MS);
+    });
+  });
+
+  const clock = document.querySelector<HTMLElement>("[data-clock]");
+  if (clock) {
+    const time = clock.querySelector<HTMLElement>("[data-clock-time]")!;
+    const note = clock.querySelector<HTMLElement>("[data-clock-note]")!;
+    const format = new Intl.DateTimeFormat("en-GB", {
+      timeZone: "Europe/Paris", hour: "2-digit", minute: "2-digit", hourCycle: "h23",
+    });
+    const tick = () => {
+      const parts = format.formatToParts(new Date());
+      const hour = Number(parts.find((p) => p.type === "hour")!.value);
+      time.textContent = parts.filter((p) => p.type !== "literal" || p.value === ":").map((p) => p.value).join("");
+      note.textContent = hour >= 23 || hour < 7 ? "It's night there, so I'll answer in the morning." : "";
+      clock.hidden = false;
+    };
+    tick();
+    setInterval(tick, 1000);
+  }
+</script>

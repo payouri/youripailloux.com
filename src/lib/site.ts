@@ -13,7 +13,11 @@ export interface Site {
   email: string;
   linkedin: string;
   github: string;
+  /** Extra contact-block links (e.g. Writing). Data, not markup: every page shows them. */
+  links?: ContactLink[];
 }
+
+export interface ContactLink { label: string; href: string }
 
 const required = [
   "name", "role", "claim.layer1", "claim.layer2", "location", "email", "linkedin", "github",
@@ -26,6 +30,11 @@ export function loadSite(dir: string = contentDir): Site {
     const value = path.split(".").reduce((o: any, k) => o?.[k], data);
     if (typeof value !== "string" || value.trim() === "") {
       throw new Error(`${file}: missing or empty "${path}"`);
+    }
+  }
+  for (const [i, link] of (data.links ?? []).entries()) {
+    if (typeof link?.label !== "string" || typeof link?.href !== "string" || !link.label.trim() || !link.href.trim()) {
+      throw new Error(`${file}: "links[${i}]" needs a non-empty label and href`);
     }
   }
   return data as Site;

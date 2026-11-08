@@ -1,6 +1,7 @@
 ---
 import Base from "../layouts/Base.astro";
 import ProofList from "../components/ProofList.astro";
+import About from "../components/About.astro";
 import { loadProof } from "../lib/loadProof";
 import { loadSite } from "../lib/site";
 
@@ -9,13 +10,17 @@ const proof = await loadProof();
 ---
 <Base site={site} title={`${site.name} · ${site.role}`} description={site.claim.layer1}>
   <main id="main">
-    <div class="landing">
-    <a class="byline" href="/">
-      <span class="byline__dot" aria-hidden="true"></span>
-      <span data-byline>{site.name} · {site.role}</span>
-    </a>
-    <h1 class="claim" data-claim-layer-1>{site.claim.layer1}</h1>
-    </div>
+    <section class="landing" aria-label="Introduction">
+      <a class="byline" href="/">
+        <span class="byline__dot" aria-hidden="true"></span>
+        <span data-byline>{site.name} · {site.role}</span>
+      </a>
+      <div class="claim">
+        <h1 class="claim__layer-1" data-claim-layer-1>{site.claim.layer1}</h1>
+        <p class="claim__layer-2" data-claim-layer-2>{site.claim.layer2}</p>
+      </div>
+    </section>
     <ProofList entries={proof} />
+    <About site={site} />
   </main>
 </Base>
