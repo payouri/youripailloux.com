@@ -46,13 +46,15 @@ const proofEntry = z.discriminatedUnion("kind", [
     .strict(),
 ]);
 
-/** Absence is the only publish state: an entry is published when its file exists. */
+/**
+ * Absence is the only publish state: an entry is published when its file exists.
+ * No custom generateId: ids stay file-based, so two files sharing a slug both reach `ordered()`,
+ * which throws. An id equal to the slug would make the glob loader overwrite one with a warning.
+ */
 const proof = defineCollection({
   loader: glob({
     base: `${contentDir}/proof`,
     pattern: "**/*.mdx",
-    generateId: ({ entry, data }) =>
-      typeof data.slug === "string" ? data.slug : `shelf/${entry.replace(/\.mdx$/, "")}`,
   }),
   schema: proofEntry,
 });
