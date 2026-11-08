@@ -3,13 +3,16 @@ import { test } from "node:test";
 import { createHighlighter } from "shiki";
 import { checkEntryRedactions, redactionTransformer } from "../../src/lib/redaction.ts";
 
-const highlighter = await createHighlighter({ themes: ["github-light"], langs: ["yaml", "ts"] });
-const render = (code: string, opts?: Parameters<typeof redactionTransformer>[0], lang = "yaml", meta = "") =>
+const highlighter = await createHighlighter({
+  themes: ["github-light"],
+  langs: ["yaml", "ts", "json", "python", "sql", "hcl"],
+});
+const render = (code: string, lang = "yaml", meta = "") =>
   highlighter.codeToHtml(code, {
     lang,
     theme: "github-light",
     meta: { __raw: meta },
-    transformers: [redactionTransformer(opts)],
+    transformers: [redactionTransformer()],
   });
 
 const fence = [
@@ -36,7 +39,7 @@ test("the generated count and category list match the markers", () => {
 });
 
 test("a marker inside a string is still a button, and the marker text never reaches the output", () => {
-  const html = render('const url = "https://<redacted:internal host>/api";', undefined, "ts");
+  const html = render('const url = "https://<redacted:internal host>/api";', "ts");
   assert.deepEqual(buttons(html), ["redacted: internal host"]);
   assert.doesNotMatch(html, /&#x3C;redacted|<redacted/);
 });
@@ -47,15 +50,25 @@ test("a fence without markers has a zero count and no buttons", () => {
   assert.deepEqual(buttons(html), []);
 });
 
-test("a marker with an unknown category fails", () => {
-  assert.throws(
-    () => render(fence, { redactions: { "secret name": "x" } }),
-    /no entry .*"internal host"/,
-  );
-});
+const bare = [
+  ["json", '{"port": <redacted:port>, "ids": [<redacted:id>, <redacted:id>]}'],
+  ["ts", "const port = <redacted:port>;\nconst ids = [<redacted:id>, <redacted:id>];"],
+  ["python", "port = <redacted:port>\nids = [<redacted:id>, <redacted:id>]"],
+  ["sql", "SELECT * FROM <redacted:port> WHERE id IN (<redacted:id>, <redacted:id>)"],
+  ["hcl", 'port = <redacted:port>\nids = [<redacted:id>, <redacted:id>]'],
+] as const;
 
-test("known categories pass, and the fence title is exposed", () => {
-  const html = render(fence, { redactions: { "secret name": "a", "internal host": "b" } }, "yaml", 'title="ci.yml"');
+for (const [lang, code] of bare) {
+  test(`a bare marker in ${lang} is a button even where the grammar splits its stand-in`, () => {
+    const html = render(code, lang);
+    assert.deepEqual(buttons(html), ["redacted: port", "redacted: id", "redacted: id"]);
+    assert.doesNotMatch(html, /[\uE000\uE001]/);
+    assert.doesNotMatch(html, />\d<\/span>/);
+  });
+}
+
+test("the fence title is exposed", () => {
+  const html = render(fence, "yaml", 'title="ci.yml"');
   assert.match(html, /data-title="ci.yml"/);
 });
 
@@ -65,7 +78,7 @@ test("every button renders the same markup whatever the category or the removed 
   assert.deepEqual(labels, ["redacted", "redacted"]);
 });
 
-test("an entry whose body uses a category missing from its map fails the build check", () => {
+test("an entry whose body uses a category missing from its map fails the build check (the only category guard)", () => {
   const body = "```yaml\na: <redacted:secret name>\nb: <redacted:nope>\n```";
   assert.throws(() => checkEntryRedactions("Case", body, { "secret name": "x" }), /"Case".*"nope"/);
   assert.doesNotThrow(() => checkEntryRedactions("Case", body, { "secret name": "x", nope: "y" }));

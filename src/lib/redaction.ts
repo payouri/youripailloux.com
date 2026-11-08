@@ -3,12 +3,16 @@
  * in a code fence; the real value never exists here. This module turns each
  * marker into a fixed-width redaction button and reports the categories used.
  */
-import type { Element, ElementContent } from "hast";
+import type { Element, ElementContent, Text } from "hast";
 import type { ShikiTransformer } from "shiki";
 
 /** Matches `<redacted:category>`; the category is free text without angle brackets. */
 const MARKER = /<redacted:([^<>\n]+?)>/g;
-/** Stands in for a marker while Shiki tokenises, so a marker is never split across tokens. */
+/**
+ * Stands in for a marker while Shiki tokenises. A grammar may still split it
+ * (the index digits become a number token in json, ts, python, ...), so the
+ * `code` hook rejoins a split sentinel before turning it into a button.
+ */
 const OPEN = "";
 const CLOSE = "";
 const SENTINEL = new RegExp(`${OPEN}(\\d+)${CLOSE}`, "g");
@@ -51,6 +55,45 @@ function button(category: string): Element {
   };
 }
 
+type Token = Element | Text;
+
+function textOf(node: ElementContent): string {
+  if (node.type === "text") return node.value;
+  if (node.type === "element") return node.children.map(textOf).join("");
+  return "";
+}
+
+function setText(node: Token, value: string): void {
+  if (node.type === "text") node.value = value;
+  else node.children = [{ type: "text", value }];
+}
+
+const unclosed = (s: string) => s.lastIndexOf(OPEN) > s.lastIndexOf(CLOSE);
+
+/** Rejoins, within one line, every sentinel a grammar split across tokens into the token where it opens. */
+function rejoin(line: Element): void {
+  const out: ElementContent[] = [];
+  let open: Token | null = null;
+  for (const child of line.children) {
+    if (open && (child.type === "element" || child.type === "text")) {
+      const text = textOf(child);
+      const end = text.indexOf(CLOSE);
+      if (end === -1) {
+        setText(open, textOf(open) + text);
+        continue;
+      }
+      setText(open, textOf(open) + text.slice(0, end + 1));
+      open = null;
+      const rest = text.slice(end + 1);
+      if (!rest) continue;
+      setText(child, rest);
+    }
+    out.push(child);
+    if ((child.type === "element" || child.type === "text") && unclosed(textOf(child))) open = child;
+  }
+  line.children = out;
+}
+
 function expand(nodes: ElementContent[], markers: readonly string[]): ElementContent[] {
   return nodes.flatMap((node): ElementContent[] => {
     if (node.type === "element") return [{ ...node, children: expand(node.children, markers) }];
@@ -70,20 +113,20 @@ function expand(nodes: ElementContent[], markers: readonly string[]): ElementCon
 /**
  * A Shiki transformer for one highlight call at a time. It writes the summary
  * on the `pre` as `data-redaction-count` and `data-redactions` (JSON), and the
- * fence's `title="..."` meta as `data-title`. Pass `redactions` to fail on an
- * unknown category right here.
+ * fence's `title="..."` meta as `data-title`. Unknown categories are caught per
+ * entry by `checkEntryRedactions`, not here: a fence has no frontmatter map.
  */
-export function redactionTransformer(options: { redactions?: Record<string, string> } = {}): ShikiTransformer {
+export function redactionTransformer(): ShikiTransformer {
   let markers: string[] = [];
   return {
     name: "redactions",
     preprocess(code) {
       markers = findMarkers(code);
-      if (options.redactions) assertKnownCategories(markers, options.redactions);
       let i = 0;
       return code.replace(MARKER, () => `${OPEN}${i++}${CLOSE}`);
     },
     code(node) {
+      for (const line of node.children) if (line.type === "element") rejoin(line);
       node.children = expand(node.children, markers);
     },
     pre(node) {
