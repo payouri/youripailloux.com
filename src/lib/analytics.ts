@@ -8,7 +8,7 @@ export const EVENTS = {
   easterEgg: "easter_egg_triggered",
 } as const;
 
-export type EasterEgg = "ship" | "redaction" | "console";
+export type EasterEgg = "ship" | "redaction";
 export type EventProps = {
   [EVENTS.caseStudyRead]: { slug: string };
   [EVENTS.email]: { method: "click" | "copy" };

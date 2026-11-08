@@ -9,6 +9,7 @@ import { createRequire } from "node:module";
 import { Resvg } from "@resvg/resvg-js";
 import satori from "satori";
 import { supportLabel, type PageData, type Support } from "./proof";
+import { CHILI_HEX } from "./palette";
 import type { Site } from "./site";
 
 export const CARD_WIDTH = 1200;
@@ -16,7 +17,7 @@ export const CARD_HEIGHT = 630;
 
 /** The light palette from DESIGN.md, as sRGB hex. */
 const c = {
-  paper: "#fdf9f9", ink: "#1e1615", muted: "#59504f", faint: "#6c6463", rule: "#e4dedd", chili: "#d01c29",
+  paper: "#fdf9f9", ink: "#1e1615", muted: "#59504f", faint: "#6c6463", rule: "#e4dedd", chili: CHILI_HEX,
 };
 
 export interface CardData {

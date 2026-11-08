@@ -46,14 +46,12 @@ test.beforeEach(async ({ page }) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
 });
 
-test("a page load sends one pageview with the referrer, and the console egg, and nothing else", async ({ page }) => {
+test("a page load sends one pageview with the referrer, and nothing else", async ({ page }) => {
   const s = await spy(page);
   await page.goto("/", { referer: "https://news.example/story" });
   await s.settle("$pageview");
-  await s.settle("easter_egg_triggered");
-  expect(s.names().sort()).toEqual(["$pageview", "easter_egg_triggered"]);
+  expect(s.names()).toEqual(["$pageview"]);
   expect(s.events.find((e) => e.event === "$pageview")!.properties.$referrer).toBe("https://news.example/story");
-  expect(s.events.find((e) => e.event === "easter_egg_triggered")!.properties.egg).toBe("console");
 });
 
 test("email: clicking the address and the Copy button each send one event", async ({ page, context }) => {

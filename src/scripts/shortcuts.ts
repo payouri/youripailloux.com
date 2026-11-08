@@ -1,6 +1,8 @@
 import { hitCounter, isTypingTarget, sequenceMatcher, stepIndex } from "../lib/keys";
 import { EVENTS } from "../lib/analytics";
 import { track } from "./analytics";
+import { CHILI_HEX } from "../lib/palette";
+import { currentSection } from "../lib/sections";
 import { prefersReducedMotion } from "./reduced-motion";
 
 const REDACTION_HITS = 4;
@@ -14,20 +16,12 @@ function targets(): HTMLElement[] {
   return sections;
 }
 
-/** The section the reader is in: the last heading above the upper third of the viewport. */
-function sectionInView(list: HTMLElement[]): number {
-  const line = window.innerHeight * 0.33;
-  let index = -1;
-  list.forEach((h, i) => { if (h.getBoundingClientRect().top <= line) index = i; });
-  return index;
-}
-
 function move(delta: 1 | -1) {
   const list = targets();
   const onList = list[0]?.matches("a");
   const active = document.activeElement;
-  let current = list.findIndex((el) => el === active || el.contains(active));
-  if (current < 0 && !onList) current = sectionInView(list);
+  // On a case study the scroll position decides, not a heading left focused by an earlier press.
+  const current = onList ? list.findIndex((el) => el === active || el.contains(active)) : currentSection(list);
   const next = list[stepIndex(current, delta, list.length)];
   if (!next) return;
   next.focus({ preventScroll: true });
@@ -72,9 +66,8 @@ document.addEventListener("click", (e) => {
   }
 });
 
-track(EVENTS.easterEgg, { egg: "console" });
 console.log(
   "%cHello, fellow developer.%c\nYou read the console, so you are my kind of user. Press ? for the shortcuts, or write to me: the address is at the bottom of the page.",
-  "font-weight:700;color:#d6322b",
+  `font-weight:700;color:${CHILI_HEX}`,
   "",
 );

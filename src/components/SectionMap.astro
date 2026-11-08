@@ -17,6 +17,7 @@ const { sections } = Astro.props;
 </nav>
 
 <script>
+  import { currentSection } from "../lib/sections";
   const map = document.querySelector<HTMLElement>("[data-section-map]");
   if (map) {
     const dot = map.querySelector<HTMLElement>("[data-section-dot]")!;
@@ -50,13 +51,7 @@ const { sections } = Astro.props;
     // The active section is the last heading that has scrolled past the upper third
     // of the viewport. At the foot of the page, the last section is active.
     const update = () => {
-      const line = window.innerHeight * 0.33;
-      let index = 0;
-      headings.forEach((h, i) => {
-        if (h.getBoundingClientRect().top <= line) index = i;
-      });
-      const atFoot = window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 4;
-      if (atFoot) index = headings.length - 1;
+      const index = currentSection(headings);
       show(index);
     };
 
