@@ -1,15 +1,21 @@
 ---
 import Base from "../layouts/Base.astro";
+import ProofList from "../components/ProofList.astro";
+import { loadProof } from "../lib/loadProof";
 import { loadSite } from "../lib/site";
 
 const site = loadSite();
+const proof = await loadProof();
 ---
 <Base site={site} title={`${site.name} · ${site.role}`} description={site.claim.layer1}>
-  <main class="landing" id="main">
+  <main id="main">
+    <div class="landing">
     <a class="byline" href="/">
       <span class="byline__dot" aria-hidden="true"></span>
       <span data-byline>{site.name} · {site.role}</span>
     </a>
     <h1 class="claim" data-claim-layer-1>{site.claim.layer1}</h1>
+    </div>
+    <ProofList entries={proof} />
   </main>
 </Base>

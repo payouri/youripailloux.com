@@ -1,3 +1,4 @@
+import mdx from "@astrojs/mdx";
 import tailwindcss from "@tailwindcss/vite";
 import { defineConfig } from "astro/config";
 
@@ -7,5 +8,6 @@ export default defineConfig({
   output: "static",
   outDir: process.env.OUT_DIR || "dist",
   site: "https://youripailloux.com",
+  integrations: [mdx()],
   vite: { plugins: [tailwindcss()] },
 });

@@ -1,0 +1,49 @@
+---
+import Base from "./Base.astro";
+import { loadSite } from "../lib/site";
+import { nextPage, supportLabel, type PageData, type ProofData } from "../lib/proof";
+
+interface Props { entry: PageData; list: ProofData[] }
+const { entry, list } = Astro.props;
+const site = loadSite();
+const next = nextPage(list, entry);
+---
+<Base site={site} title={`${entry.title} · ${site.name}`} description={entry.summary}>
+  <main class="page" id="main" data-kind={entry.kind}>
+    <a class="byline" href="/">
+      <span class="byline__dot" aria-hidden="true"></span>
+      <span data-byline>{site.name} · {site.role}</span>
+    </a>
+    <article class="case">
+      <h1 class="case__title">{entry.title}</h1>
+      <p class="case__context" data-context>{entry.context.employer} · {entry.context.year}</p>
+      <p class="case__support">{supportLabel[entry.support]}</p>
+      <p class="case__summary" data-summary>{entry.summary}</p>
+      {entry.kind === "tool" && (
+        <dl class="tool" data-tool-facts>
+          <div><dt>Friction it removes</dt><dd>{entry.friction}</dd></div>
+          <div><dt>Who uses it</dt><dd>{entry.users}</dd></div>
+          <div>
+            <dt>ADRs</dt>
+            <dd>
+              <ul role="list">
+                {entry.adrs.map((a) => <li><a href={a.href}>{a.title}</a></li>)}
+              </ul>
+            </dd>
+          </div>
+          <div><dt>Source</dt><dd><a href={entry.repo}>{entry.repo.replace(/^https?:\/\//, "")}</a></dd></div>
+        </dl>
+      )}
+      <div class="prose" data-body><slot /></div>
+      <p class="case__attribution" data-attribution>{entry.attribution}</p>
+    </article>
+    {next && (
+      <nav class="next" aria-label="Next proof">
+        <a href={`/${next.slug}`} data-next>
+          <span class="next__label">Next</span>
+          <span class="next__title">{next.title}<span class="next__arrow" aria-hidden="true">→</span></span>
+        </a>
+      </nav>
+    )}
+  </main>
+</Base>

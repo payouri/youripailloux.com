@@ -1,0 +1,38 @@
+---
+// One ranked list. Never grouped, never numbered, never a grid.
+import { supportLabel, type ProofData } from "../lib/proof";
+import ProofIcon from "./ProofIcon.astro";
+interface Props { entries: ProofData[] }
+const { entries } = Astro.props;
+---
+{entries.length > 0 && (
+  <section class="proof" aria-label="Proof" data-proof-list>
+    <ul class="proof__list" role="list">
+      {entries.map((e) =>
+        e.kind === "shelf" ? (
+          <li class="shelf" data-kind="shelf">
+            <a class="shelf__link" href={e.href}>
+              <ProofIcon entry={e} />
+              <span class="shelf__path">{e.path}</span>
+              <span class="shelf__summary">{e.summary}</span>
+              <span class="shelf__mark" aria-hidden="true">↗</span>
+            </a>
+          </li>
+        ) : (
+          <li class="row" data-kind={e.kind}>
+            <a class="row__link" href={`/${e.slug}`}>
+              <span class="row__icon"><ProofIcon entry={e} /></span>
+              <span class="row__main">
+                <span class="row__title">{e.title}</span>
+                <span class="row__support">{supportLabel[e.support]}</span>
+                <span class="row__summary">{e.summary}</span>
+              </span>
+              <span class="row__context">{e.context.employer} · {e.context.year}</span>
+              <span class="row__arrow" aria-hidden="true">→</span>
+            </a>
+          </li>
+        ),
+      )}
+    </ul>
+  </section>
+)}

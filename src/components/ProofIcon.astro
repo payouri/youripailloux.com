@@ -1,0 +1,32 @@
+---
+// Inline SVG, drawn with currentColor. A case study follows its support; a tool is
+// always the package; a shelf item is always the file.
+import type { ProofData } from "../lib/proof";
+interface Props { entry: ProofData }
+const { entry } = Astro.props;
+const icon = entry.kind === "tool" ? "package" : entry.kind === "shelf" ? "file" : entry.support === "platform" ? "layers" : "loop";
+const size = entry.kind === "shelf" ? 19 : 24;
+---
+<svg class={`icon icon--${icon}`} data-icon={icon} width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+  {icon === "layers" && (<>
+    <path class="l3" d="M3 16.5 12 21l9-4.5" />
+    <path class="l2" d="M3 12.5 12 17l9-4.5" />
+    <path class="l1" d="M12 3 3 7.5 12 12l9-4.5z" />
+  </>)}
+  {icon === "loop" && (<g class="loop">
+    <path d="M20 12a8 8 0 0 1-14 5.3" />
+    <path d="M4 12a8 8 0 0 1 14-5.3" />
+    <path d="M18.5 3v4h-4" />
+    <path d="M5.5 21v-4h4" />
+  </g>)}
+  {icon === "package" && (<g class="pkg">
+    <path d="M12 3 3.5 7.5v9L12 21l8.5-4.5v-9z" />
+    <path d="M3.5 7.5 12 12l8.5-4.5" />
+    <path d="M12 12v9" />
+  </g>)}
+  {icon === "file" && (<>
+    <path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z" />
+    <path class="br-l" d="m10 12-2 2 2 2" />
+    <path class="br-r" d="m14 12 2 2-2 2" />
+  </>)}
+</svg>
