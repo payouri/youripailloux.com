@@ -8,6 +8,7 @@ import { INTRO_KEY } from "../scripts/intro";
 import { QUERY } from "../scripts/reduced-motion";
 import ContactBlock from "../components/ContactBlock.astro";
 import { noindex } from "../lib/config";
+import { pipelineSteps } from "../lib/icons";
 import type { Site } from "../lib/site";
 
 interface Props { site: Site; title: string; description: string; card: string }
@@ -60,9 +61,7 @@ const pageUrl = new URL(Astro.url.pathname, Astro.site).href;
       <div class="intro__inner">
         <p class="intro__name">{site.name}</p>
         <ul class="intro__steps" role="list">
-          <li>build <span>✓</span></li>
-          <li>test <span>✓</span></li>
-          <li>deploy <span>✓</span></li>
+          {pipelineSteps.map((w) => <li>{w} <span>✓</span></li>)}
         </ul>
         <span class="intro__bar"></span>
       </div>

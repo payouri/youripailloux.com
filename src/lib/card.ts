@@ -10,6 +10,7 @@ import { Resvg } from "@resvg/resvg-js";
 import satori from "satori";
 import { supportLabel, type PageData, type Support } from "./proof";
 import { CHILI_HEX } from "./palette";
+import { iconPaths, pipelineSteps, supportIcon, type SupportIconName } from "./icons";
 import type { Site } from "./site";
 
 export const CARD_WIDTH = 1200;
@@ -38,12 +39,6 @@ export function homeCard(site: Site): CardData {
   return { title: site.role, summary: site.claim.layer1, byline: site.name };
 }
 
-const iconPaths: Record<string, string[]> = {
-  layers: ["M3 16.5 12 21l9-4.5", "M3 12.5 12 17l9-4.5", "M12 3 3 7.5 12 12l9-4.5z"],
-  loop: ["M20 12a8 8 0 0 1-14 5.3", "M4 12a8 8 0 0 1 14-5.3", "M18.5 3v4h-4", "M5.5 21v-4h4"],
-};
-const iconFor = (s: Support) => (s === "platform" ? "layers" : "loop");
-
 let fonts: { name: string; data: Buffer; weight: 400 | 700; style: "normal" }[] | undefined;
 function loadFonts() {
   // Satori reads ttf/otf/woff, not woff2: use the .woff files shipped beside the woff2 the pages preload.
@@ -64,7 +59,7 @@ const el = (type: string, props: Record<string, unknown>, ...children: unknown[]
 const row = (style: Record<string, unknown>, ...children: unknown[]) =>
   el("div", { style: { display: "flex", ...style } }, ...children);
 
-function icon(name: string) {
+function icon(name: SupportIconName) {
   return el("svg", {
     width: 36, height: 36, viewBox: "0 0 24 24", fill: "none", stroke: c.muted,
     "stroke-width": 1.6, "stroke-linecap": "round", "stroke-linejoin": "round",
@@ -87,13 +82,13 @@ export function cardTree(d: CardData): Node {
     row({ flexDirection: "column", justifyContent: "center", width: 1040, height: 400 },
       d.support
         ? row({ alignItems: "center", marginBottom: 24, fontSize: 24, fontWeight: 700, color: c.muted },
-            icon(iconFor(d.support)), row({ marginLeft: 14 }, supportLabel[d.support]))
+            icon(supportIcon[d.support]), row({ marginLeft: 14 }, supportLabel[d.support]))
         : null,
       row({ fontSize: long ? 60 : 76, fontWeight: 700, lineHeight: 1.06, letterSpacing: -2, marginBottom: 28, width: 1040 }, d.title),
       row({ fontSize: 30, lineHeight: 1.45, color: c.muted, width: 1040 }, d.summary.length > 170 ? `${d.summary.slice(0, 167).trimEnd()}…` : d.summary)),
     row({ width: 1040, justifyContent: "space-between", alignItems: "center", borderTop: `2px solid ${c.rule}`, paddingTop: 24, fontSize: 26, fontWeight: 700 },
       row({}, d.byline),
-      row({ color: c.faint, alignItems: "center" }, ...["build", "test", "deploy"].map((w, i) => row({ alignItems: "center", marginLeft: i ? 24 : 0 }, w, check())))),
+      row({ color: c.faint, alignItems: "center" }, ...pipelineSteps.map((w, i) => row({ alignItems: "center", marginLeft: i ? 24 : 0 }, w, check())))),
   );
 }
 
