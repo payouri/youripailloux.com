@@ -96,6 +96,34 @@ test("LinkedIn and GitHub clicks each send one event naming the profile", async 
   expect(s.events.filter((e) => e.event === "profile_link_clicked")).toHaveLength(2);
 });
 
+test("GitHub links that are not the profile (shelf rows, tool Source, ADRs) send no profile event", async ({ page }) => {
+  const s = await spy(page);
+  await page.route(/github\.com/, (r) => r.fulfill({ status: 200, contentType: "text/html", body: "ok" }));
+  for (const url of ["/", "/fixture-tool"]) {
+    await page.goto(url);
+    await s.settle("$pageview", url === "/" ? 1 : 2);
+    const links = page.locator("a[href*='github.com']:not([data-profile])");
+    expect(await links.count()).toBeGreaterThan(0);
+    await links.first().click();
+    await page.waitForTimeout(400);
+  }
+  expect(s.names()).not.toContain("profile_link_clicked");
+});
+
+test("email: a failed Copy button press is not counted", async ({ page }) => {
+  await page.addInitScript(() => {
+    Object.defineProperty(navigator, "clipboard", { value: { writeText: () => Promise.reject(new Error("denied")) } });
+    document.execCommand = () => false;
+  });
+  const s = await spy(page);
+  await page.goto("/");
+  await s.settle("$pageview");
+  await page.getByRole("button", { name: "Copy" }).click();
+  await expect(page.locator("[data-toast]")).toContainText("Couldn't copy");
+  await page.waitForTimeout(400);
+  expect(s.names()).not.toContain("email_contacted");
+});
+
 test("a case study sends case_study_read only once its end is reached", async ({ page }) => {
   await page.setViewportSize({ width: 800, height: 400 });
   const s = await spy(page);

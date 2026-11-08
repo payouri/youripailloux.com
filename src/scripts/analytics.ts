@@ -1,4 +1,4 @@
-import { EVENTS, posthogConfig, profileOf, type EventProps } from "../lib/analytics";
+import { EVENTS, posthogConfig, type EventProps } from "../lib/analytics";
 
 /** Set at build time. Without it (local dev, forks) the tracker never loads and every call is a no-op. */
 const KEY = import.meta.env.PUBLIC_POSTHOG_KEY as string | undefined;
@@ -31,11 +31,12 @@ const trackCopy = () => {
 function onClick(e: MouseEvent) {
   const target = e.target instanceof Element ? e.target : null;
   if (!target) return;
-  if (target.closest("[data-copy]")) { trackCopy(); return; }
   if (emailLink(target)) { track(EVENTS.email, { method: "click" }); return; }
-  const profile = profileOf(target.closest<HTMLAnchorElement>("a[href]")?.href ?? "");
-  if (profile) track(EVENTS.profile, { profile });
+  // Only the contact block's own LinkedIn and GitHub links count, not proof links that happen to be on github.com.
+  const profile = target.closest<HTMLAnchorElement>("a[data-profile]")?.dataset.profile;
+  if (profile === "linkedin" || profile === "github") track(EVENTS.profile, { profile });
 }
+window.addEventListener("site:copied", trackCopy); // fired by ContactBlock after a successful button copy
 document.addEventListener("click", onClick);
 document.addEventListener("auxclick", (e) => { if (e.button === 1) onClick(e); });
 

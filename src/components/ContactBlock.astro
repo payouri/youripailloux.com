@@ -12,7 +12,7 @@ const links = site.links ?? [];
       <button type="button" class="copy" data-copy={site.email}>Copy</button>
     </p>
     <p class="contact__elsewhere">
-      Or find me on <a href={site.linkedin}>LinkedIn</a> and <a href={site.github}>GitHub</a>.
+      Or find me on <a href={site.linkedin} data-profile="linkedin">LinkedIn</a> and <a href={site.github} data-profile="github">GitHub</a>.
     </p>
     {links.length > 0 && (
       <ul class="contact__more" data-contact-links>
@@ -81,6 +81,7 @@ const links = site.links ?? [];
       const ok = await copy(button.dataset.copy ?? "");
       showToast(ok ? "Copied. Your move." : "Couldn't copy. Select the address instead.");
       if (!ok) return;
+      window.dispatchEvent(new CustomEvent("site:copied")); // analytics counts a copy only once it worked
       clearTimeout(buttonTimer);
       button.textContent = "Copied";
       button.setAttribute("data-done", "");
