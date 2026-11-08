@@ -1,9 +1,9 @@
 /**
  * The one reduced-motion gate. Every client module asks here before it moves
  * anything. (The tiny inline script in Base.astro's head runs before modules
- * load and asks the same media query; keep the two in step.)
+ * load and asks the same media query; it takes this query from here.)
  */
-const QUERY = "(prefers-reduced-motion: reduce)";
+export const QUERY = "(prefers-reduced-motion: reduce)";
 
 export function prefersReducedMotion(): boolean {
   try {

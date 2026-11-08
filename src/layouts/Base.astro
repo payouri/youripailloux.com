@@ -2,6 +2,10 @@
 import "../styles/global.css";
 import latin400 from "@fontsource/atkinson-hyperlegible-next/files/atkinson-hyperlegible-next-latin-400-normal.woff2?url";
 import latin700 from "@fontsource/atkinson-hyperlegible-next/files/atkinson-hyperlegible-next-latin-700-normal.woff2?url";
+import latin600 from "@fontsource/atkinson-hyperlegible-next/files/atkinson-hyperlegible-next-latin-600-normal.woff2?url";
+import mono400 from "@fontsource/atkinson-hyperlegible-mono/files/atkinson-hyperlegible-mono-latin-400-normal.woff2?url";
+import { INTRO_KEY } from "../scripts/intro";
+import { QUERY } from "../scripts/reduced-motion";
 import ContactBlock from "../components/ContactBlock.astro";
 import { noindex } from "../lib/config";
 import type { Site } from "../lib/site";
@@ -35,19 +39,21 @@ const pageUrl = new URL(Astro.url.pathname, Astro.site).href;
     <meta name="twitter:image" content={cardUrl} />
     {noindex && <meta name="robots" content="noindex, nofollow" />}
     <link rel="preload" href={latin400} as="font" type="font/woff2" crossorigin />
-    <script is:inline>
-      // Runs before first paint so nothing flashes. Same query as src/scripts/reduced-motion.ts.
+    <script is:inline define:vars={{ INTRO_KEY, QUERY }}>
+      // Runs before first paint so nothing flashes. Key and query come from the script modules.
       // Motion is only armed when reduced motion is off; the intro only when this session hasn't seen it.
       (function () {
         try {
-          if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+          if (matchMedia(QUERY).matches) return;
           var root = document.documentElement;
           root.dataset.reveal = "ready";
-          if (!sessionStorage.getItem("intro-played")) root.dataset.intro = "pending";
+          if (!sessionStorage.getItem(INTRO_KEY)) root.dataset.intro = "pending";
         } catch (e) {}
       })();
     </script>
+    <link rel="preload" href={latin600} as="font" type="font/woff2" crossorigin />
     <link rel="preload" href={latin700} as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href={mono400} as="font" type="font/woff2" crossorigin />
   </head>
   <body>
     <div class="intro" data-intro-layer aria-hidden="true">
