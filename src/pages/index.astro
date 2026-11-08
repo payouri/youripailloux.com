@@ -3,12 +3,13 @@ import Base from "../layouts/Base.astro";
 import ProofList from "../components/ProofList.astro";
 import About from "../components/About.astro";
 import { loadProof } from "../lib/loadProof";
+import { homeCardPath } from "../lib/card";
 import { loadSite } from "../lib/site";
 
 const site = loadSite();
 const proof = await loadProof();
 ---
-<Base site={site} title={`${site.name} · ${site.role}`} description={site.claim.layer1}>
+<Base site={site} title={site.role} description={site.claim.layer1} card={homeCardPath}>
   <main id="main">
     <section class="landing" aria-label="Introduction">
       <a class="byline" href="/">

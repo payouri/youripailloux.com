@@ -1,6 +1,7 @@
 ---
 import Base from "./Base.astro";
 import SectionMap from "../components/SectionMap.astro";
+import { cardPath } from "../lib/card";
 import { loadSite } from "../lib/site";
 import { nextPage, supportLabel, type PageData, type ProofData } from "../lib/proof";
 
@@ -12,7 +13,7 @@ const next = nextPage(list, entry);
 // The section map lists the body's h2s, and only those.
 const sections = headings.filter((h) => h.depth === 2).map((h) => ({ slug: h.slug, text: h.text }));
 ---
-<Base site={site} title={`${entry.title} · ${site.name}`} description={entry.summary}>
+<Base site={site} title={entry.title} description={entry.summary} card={cardPath(entry.slug)}>
   <main class="page" id="main" data-kind={entry.kind}>
     <a class="byline" href="/">
       <span class="byline__dot" aria-hidden="true"></span>

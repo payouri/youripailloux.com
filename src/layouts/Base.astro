@@ -6,8 +6,11 @@ import ContactBlock from "../components/ContactBlock.astro";
 import { noindex } from "../lib/config";
 import type { Site } from "../lib/site";
 
-interface Props { site: Site; title: string; description: string }
-const { site, title, description } = Astro.props;
+interface Props { site: Site; title: string; description: string; card: string }
+const { site, title: pageTitle, description, card } = Astro.props;
+const title = `${pageTitle} — ${site.name}`;
+const cardUrl = new URL(card, Astro.site).href;
+const pageUrl = new URL(Astro.url.pathname, Astro.site).href;
 ---
 <!doctype html>
 <html lang="en">
@@ -17,6 +20,19 @@ const { site, title, description } = Astro.props;
     <meta name="color-scheme" content="light dark" />
     <title>{title}</title>
     <meta name="description" content={description} />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={site.name} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={pageUrl} />
+    <meta property="og:image" content={cardUrl} />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={cardUrl} />
     {noindex && <meta name="robots" content="noindex, nofollow" />}
     <link rel="preload" href={latin400} as="font" type="font/woff2" crossorigin />
     <link rel="preload" href={latin700} as="font" type="font/woff2" crossorigin />
