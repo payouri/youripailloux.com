@@ -151,3 +151,54 @@ for (const scheme of ["light", "dark"] as const) {
     });
   }
 }
+
+// DESIGN.md "The Two Temperatures Rule" and "The Monospace Is Literal Rule": chili never
+// appears inside proof, and mono is for literal code only, never for labels.
+async function chiliInkColour(page: Page) {
+  return page.evaluate(() => {
+    const probe = document.createElement("span");
+    probe.style.color = "var(--color-chili-ink)";
+    document.body.append(probe);
+    const colour = getComputedStyle(probe).color;
+    probe.remove();
+    return colour;
+  });
+}
+
+for (const scheme of ["light", "dark"] as const) {
+  test.describe(`proof links at rest (${scheme})`, () => {
+    test.use({ colorScheme: scheme });
+
+    test("a link inside a case-study paragraph is not chili", async ({ page }) => {
+      await page.goto("/fixture-dx-case");
+      const chili = await chiliInkColour(page);
+      const colour = await page.locator("[data-body] p").first().evaluate((p) => {
+        const a = document.createElement("a");
+        a.href = "https://example.com/rfc";
+        a.textContent = "RFC";
+        p.append(a);
+        return getComputedStyle(a).color;
+      });
+      expect(colour).not.toBe(chili);
+    });
+
+    test("every link on a tool page is not chili", async ({ page }) => {
+      await page.goto("/fixture-tool");
+      const links = page.locator(".tool a");
+      expect(await links.count()).toBeGreaterThan(0);
+      const chili = await chiliInkColour(page);
+      for (const a of await links.all()) {
+        expect(await a.evaluate((el) => getComputedStyle(el).color)).not.toBe(chili);
+      }
+    });
+  });
+}
+
+test("redaction category labels in 'What was removed' are not monospace", async ({ page }) => {
+  await page.goto("/fixture-dx-case");
+  const labels = page.locator("[data-removed-category]");
+  await expect(labels).toHaveCount(2);
+  for (const dt of await labels.all()) {
+    expect(await dt.evaluate((el) => getComputedStyle(el).fontFamily)).not.toMatch(/mono/i);
+  }
+});
