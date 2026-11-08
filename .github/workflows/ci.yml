@@ -12,5 +12,8 @@ jobs:
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       - run: pnpm typecheck
+      # Real content (content/) builds with NOINDEX on, so a bad real-content
+      # commit fails here, not at deploy. Tests below stay fixture-only.
+      - run: pnpm build
       - run: pnpm exec playwright install --with-deps chromium
       - run: pnpm test
