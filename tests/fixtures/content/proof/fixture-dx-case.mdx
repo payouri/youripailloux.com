@@ -9,6 +9,9 @@ context:
   employer: Examplecorp
   year: 2023
 attribution: FIXTURE attribution. Pat led it; two teammates built the pilot.
+redactions:
+  customer identifier: An identifier that names one of the employer's customers.
+  internal host: A hostname that only resolves inside the employer's network.
 ---
 
 ## Problem
@@ -18,3 +21,11 @@ FIXTURE problem text.
 ## Outcome
 
 FIXTURE outcome text.
+
+```json title="pilot.json"
+{
+  "customer": "<redacted:customer identifier>",
+  "endpoint": "https://<redacted:internal host>/v1/deploy",
+  "retries": 3
+}
+```

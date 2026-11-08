@@ -386,6 +386,73 @@
   }
   .prose h2:first-child { margin-top: 0; }
   .prose p { margin-top: 1rem; }
+
+  /* Code document (DESIGN.md): a bordered file with no fill. Chili appears only as a redaction's hover state. */
+  :root {
+    --astro-code-foreground: var(--color-ink-muted);
+    --astro-code-background: transparent;
+    --astro-code-token-constant: var(--color-ink-muted);
+    --astro-code-token-string: var(--color-ink-muted);
+    --astro-code-token-comment: var(--color-ink-faint);
+    --astro-code-token-keyword: var(--color-ink);
+    --astro-code-token-parameter: var(--color-ink-muted);
+    --astro-code-token-function: var(--color-ink);
+    --astro-code-token-string-expression: var(--color-ink-muted);
+    --astro-code-token-punctuation: var(--color-ink-muted);
+    --astro-code-token-link: var(--color-ink-muted);
+  }
+  .code-doc {
+    margin-top: 1.5rem;
+    border: 1px solid var(--color-rule-strong);
+    border-radius: var(--radius-document);
+  }
+  .code-doc__head {
+    display: flex; flex-wrap: wrap; justify-content: space-between; gap: 0.25rem 1.5rem;
+    padding: 0.625rem 1rem;
+    border-bottom: 1px solid var(--color-rule);
+    font-family: var(--font-mono); font-size: 0.75rem; color: var(--color-ink-muted);
+  }
+  .code-doc__name { font-weight: 700; color: var(--color-ink); }
+  .code-doc pre {
+    margin: 0; padding: 0.875rem 1rem;
+    font-family: var(--font-mono); font-size: var(--text-code); line-height: var(--text-code--line-height);
+    white-space: pre-wrap; overflow-wrap: anywhere;
+    counter-reset: line;
+  }
+  .code-doc .line { display: block; padding-left: 4ch; position: relative; }
+  .code-doc .line::before {
+    counter-increment: line; content: counter(line);
+    position: absolute; left: 0; width: 3ch; text-align: right;
+    color: var(--color-ink-faint); opacity: 0.6; user-select: none;
+  }
+  .code-doc__removed { border-top: 1px solid var(--color-rule); padding: 0.875rem 1rem 1rem; font-size: 0.875rem; }
+  .code-doc__removed h3 { font-size: var(--text-label); font-weight: 700; }
+  .code-doc__removed dl { margin-top: 0.5rem; display: grid; gap: 0.5rem; }
+  .code-doc__removed dt { font-family: var(--font-mono); font-size: 0.8125rem; font-weight: 700; }
+  .code-doc__removed dd { color: var(--color-ink-muted); }
+
+  /* Redaction: fixed width, so the removed value's length never shows. */
+  .redaction {
+    position: relative; display: inline-block; vertical-align: baseline;
+    width: 9.5ch; padding: 0 0 0.05em; margin: 0;
+    border: 0; border-radius: var(--radius-redaction);
+    background: var(--color-ink); color: var(--color-paper);
+    font: inherit; font-size: 0.6875rem; font-weight: 700; line-height: 1.5; text-align: center;
+    cursor: help;
+  }
+  .redaction:hover, .redaction:focus-visible { background: var(--color-chili); color: var(--color-on-chili); }
+  .redaction:focus-visible { outline-offset: 2px; }
+  .redaction__tip {
+    position: absolute; left: 0; bottom: calc(100% + 0.4rem); z-index: 1;
+    width: max-content; max-width: min(16rem, 70vw);
+    padding: 0.35rem 0.6rem; border-radius: var(--radius-note);
+    background: var(--color-ink); color: var(--color-paper);
+    font-family: var(--font-sans); font-size: 0.8125rem; font-weight: 400; line-height: 1.4; text-align: left;
+    visibility: hidden; opacity: 0; pointer-events: none;
+    transition: opacity 160ms var(--ease-enter);
+  }
+  .redaction:hover .redaction__tip, .redaction:focus-visible .redaction__tip { visibility: visible; opacity: 1; }
+  @media (prefers-reduced-motion: reduce) { .redaction__tip { transition: none; } }
   .case__attribution {
     margin-top: var(--spacing-section);
     padding-top: 1rem;

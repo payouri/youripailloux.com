@@ -11,6 +11,7 @@ context:
 attribution: FIXTURE attribution. The design was Pat's; the rollout was the team's.
 redactions:
   secret name: The name of a secret in the vault.
+  internal host: A hostname that only resolves inside the employer's network.
 ---
 
 ## Problem
@@ -20,3 +21,11 @@ FIXTURE problem text.
 ## Decision
 
 FIXTURE decision text.
+
+```yaml title="deploy.yml"
+# FIXTURE workflow fragment
+env:
+  TOKEN: <redacted:secret name>
+  REGISTRY: <redacted:internal host>
+  ALT_TOKEN: <redacted:secret name>
+```

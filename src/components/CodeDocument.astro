@@ -1,0 +1,29 @@
+---
+// A fenced code block rendered as a document (DESIGN.md "Code document").
+// Everything shown about redactions is read off the fence's data attributes,
+// which the transformer wrote from the markers: nothing here is typed by hand.
+const { "data-title": title, "data-redaction-count": rawCount, "data-redactions": rawCategories, tabindex: _tabindex, style: _style, ...rest } = Astro.props;
+const count = Number(rawCount ?? 0);
+const explanations: Record<string, string> = (Astro.locals as { redactions?: Record<string, string> }).redactions ?? {};
+const categories: string[] = rawCategories ? JSON.parse(rawCategories) : [];
+const removed = categories.map((c): [string, string] => [c, explanations[c]]);
+---
+<figure class="code-doc" data-code-doc>
+  <figcaption class="code-doc__head">
+    <span class="code-doc__name" data-code-name>{title ?? "excerpt"}</span>
+    <span class="code-doc__meta" data-code-meta>excerpt · versions stripped · <span data-redaction-total>{count}</span> {count === 1 ? "value" : "values"} redacted</span>
+  </figcaption>
+  <div class="code-doc__scroll">
+    <pre {...rest}><slot /></pre>
+  </div>
+  {removed.length > 0 && (
+    <div class="code-doc__removed" data-removed>
+      <h3>What was removed</h3>
+      <dl>
+        {removed.map(([category, why]) => (
+          <div><dt data-removed-category>{category}</dt><dd>{why}</dd></div>
+        ))}
+      </dl>
+    </div>
+  )}
+</figure>

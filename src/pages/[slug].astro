@@ -1,5 +1,6 @@
 ---
 import { render, getCollection } from "astro:content";
+import CodeDocument from "../components/CodeDocument.astro";
 import ProofPage from "../layouts/ProofPage.astro";
 import { loadProof } from "../lib/loadProof";
 import type { PageData } from "../lib/proof";
@@ -14,5 +15,7 @@ export async function getStaticPaths() {
 const { entry: raw, list } = Astro.props;
 const { Content } = await render(raw);
 const entry = raw.data as PageData;
+// CodeDocument reads the entry's category explanations from here (one request per page).
+Astro.locals.redactions = entry.redactions;
 ---
-<ProofPage entry={entry} list={list}><Content /></ProofPage>
+<ProofPage entry={entry} list={list}><Content components={{ pre: CodeDocument }} /></ProofPage>
