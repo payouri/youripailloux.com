@@ -1,4 +1,6 @@
 import { hitCounter, isTypingTarget, sequenceMatcher, stepIndex } from "../lib/keys";
+import { EVENTS } from "../lib/analytics";
+import { track } from "./analytics";
 import { prefersReducedMotion } from "./reduced-motion";
 
 const REDACTION_HITS = 4;
@@ -50,7 +52,10 @@ document.addEventListener("keydown", (e) => {
   if (e.key === "?") { e.preventDefault(); togglePanel(); return; }
   if (panel?.open) return; // the modal panel owns the keyboard (Esc closes it natively)
   if (e.key === "j" || e.key === "k") { e.preventDefault(); move(e.key === "j" ? 1 : -1); }
-  if (e.key.length === 1 && ship.push(e.key)) say("Shipped. On your own, as promised.");
+  if (e.key.length === 1 && ship.push(e.key)) {
+    say("Shipped. On your own, as promised.");
+    track(EVENTS.easterEgg, { egg: "ship" });
+  }
 });
 
 // Click a redaction four times and it talks back.
@@ -59,6 +64,7 @@ document.addEventListener("click", (e) => {
   const bar = (e.target as Element | null)?.closest<HTMLElement>("button.redaction");
   if (!bar || !redactionHits.hit(bar)) return;
   say("Nice try. It stays redacted.");
+  track(EVENTS.easterEgg, { egg: "redaction" });
   if (!prefersReducedMotion()) {
     bar.removeAttribute("data-shake");
     void bar.offsetWidth;
@@ -66,6 +72,7 @@ document.addEventListener("click", (e) => {
   }
 });
 
+track(EVENTS.easterEgg, { egg: "console" });
 console.log(
   "%cHello, fellow developer.%c\nYou read the console, so you are my kind of user. Press ? for the shortcuts, or write to me: the address is at the bottom of the page.",
   "font-weight:700;color:#d6322b",

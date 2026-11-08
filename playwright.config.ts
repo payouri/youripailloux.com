@@ -12,7 +12,7 @@ const PORT = 4399;
 if (process.env.TEST_WORKER_INDEX === undefined) {
   execSync("pnpm exec astro build", {
     stdio: "inherit",
-    env: { ...process.env, CONTENT_DIR: "tests/fixtures/content", OUT_DIR: "dist-test", NOINDEX: "true" },
+    env: { ...process.env, CONTENT_DIR: "tests/fixtures/content", OUT_DIR: "dist-test", NOINDEX: "true", PUBLIC_POSTHOG_KEY: "phc_fixture_key" },
   });
 }
 

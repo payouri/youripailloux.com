@@ -11,6 +11,7 @@
     "@tailwindcss/vite": "^4.3.5",
     "@types/hast": "^3.0.5",
     "astro": "^7.4.7",
+    "posthog-js": "^1.447.3",
     "satori": "^0.63.2",
     "shiki": "4.6.0",
     "tailwindcss": "^4.3.5"

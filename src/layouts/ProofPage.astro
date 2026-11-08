@@ -14,7 +14,7 @@ const next = nextPage(list, entry);
 const sections = headings.filter((h) => h.depth === 2).map((h) => ({ slug: h.slug, text: h.text }));
 ---
 <Base site={site} title={entry.title} description={entry.summary} card={cardPath(entry.slug)}>
-  <main class="page" id="main" data-kind={entry.kind}>
+  <main class="page" id="main" data-kind={entry.kind} data-slug={entry.slug}>
     <a class="byline" href="/">
       <span class="byline__dot" aria-hidden="true"></span>
       <span data-byline>{site.name} · {site.role}</span>
