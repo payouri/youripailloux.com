@@ -12,7 +12,11 @@ export const supportLabel: Record<Support, string> = {
 };
 
 /** Slugs that belong to the site itself. */
-const reserved = new Set(["index", "404", "robots.txt", "blog", "_astro"]);
+const reserved = new Set([
+  "index", "404", "robots.txt", "blog", "_astro",
+  // Routes the site owns: home card (og/home.png), card route (og/), portrait route, analytics proxy (ingest).
+  "home", "og", "portrait", "ingest",
+]);
 
 export const isPage = <T extends ProofData>(e: T): e is Exclude<T, { kind: "shelf" }> => e.kind !== "shelf";
 
