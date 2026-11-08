@@ -4,9 +4,13 @@
 // which the transformer wrote from the markers: nothing here is typed by hand.
 const { "data-title": title, "data-redaction-count": rawCount, "data-redactions": rawCategories, tabindex: _tabindex, style: _style, ...rest } = Astro.props;
 const count = Number(rawCount ?? 0);
-const explanations: Record<string, string> = Astro.locals.redactions ?? {};
+const explanations = Astro.locals.redactions;
 const categories: string[] = rawCategories ? JSON.parse(rawCategories) : [];
-const removed = categories.map((c): [string, string] => [c, explanations[c]]);
+const removed = categories.map((c): [string, string] => {
+  const why = explanations?.[c];
+  if (why === undefined) throw new Error(`CodeDocument: no redaction explanation for "${c}"; set Astro.locals.redactions on the page.`);
+  return [c, why];
+});
 ---
 <figure class="code-doc" data-code-doc>
   <figcaption class="code-doc__head">
