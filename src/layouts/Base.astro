@@ -61,8 +61,20 @@ const pageUrl = new URL(Astro.url.pathname, Astro.site).href;
         <span class="intro__bar"></span>
       </div>
     </div>
+    <dialog class="shortcuts" data-shortcuts aria-labelledby="shortcuts-title">
+      <div class="shortcuts__head">
+        <h2 id="shortcuts-title" class="shortcuts__title">Shortcuts</h2>
+        <button type="button" class="shortcuts__close" data-shortcuts-close>Close <kbd>Esc</kbd></button>
+      </div>
+      <dl class="shortcuts__list">
+        <div><dt><kbd>j</kbd></dt><dd>Next proof or section</dd></div>
+        <div><dt><kbd>k</kbd></dt><dd>Previous proof or section</dd></div>
+        <div><dt><kbd>?</kbd></dt><dd>This panel</dd></div>
+      </dl>
+    </dialog>
     <slot />
     <ContactBlock site={site} />
     <script>import "../scripts/motion";</script>
+    <script>import "../scripts/shortcuts";</script>
   </body>
 </html>

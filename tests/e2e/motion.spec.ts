@@ -74,7 +74,7 @@ test("every interactive element shows a visible focus indicator", async ({ page 
   await page.emulateMedia({ reducedMotion: "reduce" });
   for (const url of ["/", (await page.goto("/").then(() => page.locator(".row__link").first().getAttribute("href")))!]) {
     await page.goto(url);
-    const count = await page.locator("a[href], button").count();
+    const count = await page.locator("a[href], button:not([data-shortcuts] button)").count();
     for (let i = 0; i < count; i++) {
       await page.keyboard.press("Tab");
       const style = await page.evaluate(() => {

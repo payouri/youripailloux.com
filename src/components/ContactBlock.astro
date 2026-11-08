@@ -54,6 +54,8 @@ const links = site.links ?? [];
     }, TOAST_MS);
   }
 
+  window.addEventListener("site:toast", (e) => showToast(String((e as CustomEvent).detail)));
+
   async function copy(text: string): Promise<boolean> {
     try {
       await navigator.clipboard.writeText(text);

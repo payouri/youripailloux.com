@@ -65,9 +65,9 @@ test("no client router or framework runtime ships", async ({ page }) => {
   const scripts: string[] = [];
   page.on("request", (r) => r.resourceType() === "script" && scripts.push(r.url()));
   await page.goto("/");
-  // Only the contact block's small first-party script (copy, toast, clock); nothing from a framework or router.
+  // Only small first-party scripts (the contact block's copy, toast and clock; the shortcuts); nothing from a framework or router.
   for (const url of scripts) {
-    expect(url).toMatch(/\/_astro\/ContactBlock[^/]*\.js$/);
+    expect(url).toMatch(/\/_astro\/(ContactBlock|Base|reduced-motion)[^/]*\.js$/);
     const body = await (await page.request.get(url)).text();
     expect(body.length).toBeLessThan(4000);
     expect(body).not.toMatch(/react|vue|svelte|ClientRouter|astro:transitions/);

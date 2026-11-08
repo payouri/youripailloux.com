@@ -795,6 +795,33 @@
   .intro { display: none !important; }
 }
 
+@layer components {
+  /* Shortcuts panel and toast: human temperature only (DESIGN.md). */
+  .shortcuts {
+    position: fixed; inset: auto auto 1rem 1rem; margin: 0;
+    width: 18rem; max-width: calc(100vw - 2rem); padding: 1rem 1.1rem 1.1rem;
+    border: 0; border-radius: var(--radius-note);
+    background: var(--color-panel); color: var(--color-ink);
+    box-shadow: 0 0 0 1px var(--color-rule), 0 18px 40px -20px oklch(20% 0.03 25 / 0.4);
+  }
+  .shortcuts::backdrop { background: transparent; }
+  .shortcuts__head { display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
+  .shortcuts__title { font-size: var(--text-label); font-weight: 700; }
+  .shortcuts__close { border: 0; background: none; padding: 0.15rem; color: inherit; font: inherit; cursor: pointer; }
+  .shortcuts__list { margin-top: 0.75rem; display: grid; gap: 0.5rem; }
+  .shortcuts__list > div { display: flex; align-items: center; gap: 0.75rem; }
+  .shortcuts__list dt { flex: none; min-width: 2.25rem; }
+  .shortcuts__list dd { color: var(--color-ink-muted); font-size: 0.9375rem; }
+  .redaction[data-shake] { animation: redaction-shake 360ms var(--ease-state); }
+  @keyframes redaction-shake {
+    20% { transform: translateX(-3px); } 40% { transform: translateX(3px); }
+    60% { transform: translateX(-2px); } 80% { transform: translateX(2px); }
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .redaction[data-shake] { animation: none; }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     transition-duration: 0.01ms !important;
