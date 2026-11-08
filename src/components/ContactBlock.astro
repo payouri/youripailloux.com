@@ -1,0 +1,14 @@
+---
+import type { Site } from "../lib/site";
+interface Props { site: Site }
+const { site } = Astro.props;
+---
+<section class="contact" aria-labelledby="contact-line" data-contact-block>
+  <div class="contact__inner">
+    <p id="contact-line" class="contact__line">Want to talk? Write to me.</p>
+    <p class="contact__email"><a href={`mailto:${site.email}`}>{site.email}</a></p>
+    <p class="contact__elsewhere">
+      Or find me on <a href={site.linkedin}>LinkedIn</a> and <a href={site.github}>GitHub</a>.
+    </p>
+  </div>
+</section>

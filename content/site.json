@@ -1,0 +1,14 @@
+{
+  "name": "Youri Pailloux",
+  "role": "DX Engineer",
+  "claim": {
+    "layer1": "I build the tools and infrastructure that let developers ship on their own, all the way to production.",
+    "layer2": "Developers include the agents they work with."
+  },
+  "about": "",
+  "location": "Based in Montpellier, France",
+  "portrait": "",
+  "email": "hello@youripailloux.com",
+  "linkedin": "https://www.linkedin.com/in/youripailloux",
+  "github": "https://github.com/payouri"
+}

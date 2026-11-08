@@ -1,0 +1,28 @@
+---
+import "../styles/global.css";
+import latin400 from "@fontsource/atkinson-hyperlegible-next/files/atkinson-hyperlegible-next-latin-400-normal.woff2?url";
+import latin700 from "@fontsource/atkinson-hyperlegible-next/files/atkinson-hyperlegible-next-latin-700-normal.woff2?url";
+import ContactBlock from "../components/ContactBlock.astro";
+import { noindex } from "../lib/config";
+import type { Site } from "../lib/site";
+
+interface Props { site: Site; title: string; description: string }
+const { site, title, description } = Astro.props;
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="light dark" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    {noindex && <meta name="robots" content="noindex, nofollow" />}
+    <link rel="preload" href={latin400} as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href={latin700} as="font" type="font/woff2" crossorigin />
+  </head>
+  <body>
+    <slot />
+    <ContactBlock site={site} />
+  </body>
+</html>

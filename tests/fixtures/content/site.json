@@ -1,0 +1,14 @@
+{
+  "name": "Pat Fixture",
+  "role": "Fixture Engineer",
+  "claim": {
+    "layer1": "FIXTURE claim, layer one: placeholder text that is never real content.",
+    "layer2": "FIXTURE claim, layer two: placeholder text."
+  },
+  "about": "FIXTURE about prose for the fictional Pat Fixture of Examplecorp.",
+  "location": "Based in Fixtureville",
+  "portrait": "fixture-portrait.png",
+  "email": "pat@fixture.example",
+  "linkedin": "https://www.linkedin.com/in/pat-fixture",
+  "github": "https://github.com/pat-fixture"
+}

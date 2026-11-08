@@ -1,0 +1,262 @@
+@import "tailwindcss";
+
+/* Fonts: self-hosted via Fontsource, Latin subset only. Preloaded in Base.astro. */
+@font-face {
+  font-family: "Atkinson Hyperlegible Next";
+  font-style: normal;
+  font-display: swap;
+  font-weight: 400;
+  src: url("../../node_modules/@fontsource/atkinson-hyperlegible-next/files/atkinson-hyperlegible-next-latin-400-normal.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Atkinson Hyperlegible Next";
+  font-style: normal;
+  font-display: swap;
+  font-weight: 600;
+  src: url("../../node_modules/@fontsource/atkinson-hyperlegible-next/files/atkinson-hyperlegible-next-latin-600-normal.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Atkinson Hyperlegible Next";
+  font-style: normal;
+  font-display: swap;
+  font-weight: 700;
+  src: url("../../node_modules/@fontsource/atkinson-hyperlegible-next/files/atkinson-hyperlegible-next-latin-700-normal.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Atkinson Hyperlegible Mono";
+  font-style: normal;
+  font-display: swap;
+  font-weight: 400;
+  src: url("../../node_modules/@fontsource/atkinson-hyperlegible-mono/files/atkinson-hyperlegible-mono-latin-400-normal.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Atkinson Hyperlegible Mono";
+  font-style: normal;
+  font-display: swap;
+  font-weight: 600;
+  src: url("../../node_modules/@fontsource/atkinson-hyperlegible-mono/files/atkinson-hyperlegible-mono-latin-600-normal.woff2") format("woff2");
+}
+
+/* The one @theme: every DESIGN.md token lives here. Dark values are tokens too
+   (suffix -dark) and are mapped onto the base names under a dark system theme. */
+@theme static {
+  --color-paper: oklch(98.6% 0.004 25);
+  --color-ink: oklch(21% 0.012 25);
+  --color-ink-muted: oklch(44% 0.012 25);
+  --color-ink-faint: oklch(51% 0.01 25);
+  --color-rule: oklch(90.5% 0.006 25);
+  --color-rule-strong: oklch(84% 0.008 25);
+  --color-panel: oklch(96.2% 0.006 25);
+  --color-panel-strong: oklch(93.5% 0.008 25);
+  --color-chili: oklch(55% 0.21 25);
+  --color-chili-soft: oklch(93.5% 0.035 25);
+  --color-chili-ink: oklch(45% 0.18 25);
+  --color-on-chili: oklch(98.5% 0.01 25);
+
+  --color-paper-dark: oklch(16.5% 0.006 25);
+  --color-ink-dark: oklch(93% 0.006 25);
+  --color-ink-muted-dark: oklch(74% 0.008 25);
+  --color-ink-faint-dark: oklch(63% 0.008 25);
+  --color-rule-dark: oklch(27% 0.008 25);
+  --color-rule-strong-dark: oklch(35% 0.01 25);
+  --color-panel-dark: oklch(20.5% 0.008 25);
+  --color-panel-strong-dark: oklch(24.5% 0.01 25);
+  --color-chili-dark: oklch(66% 0.19 25);
+  --color-chili-soft-dark: oklch(29% 0.06 25);
+  --color-chili-ink-dark: oklch(78% 0.13 25);
+  --color-on-chili-dark: oklch(16% 0.02 25);
+
+  --font-sans: "Atkinson Hyperlegible Next", system-ui, sans-serif;
+  --font-mono: "Atkinson Hyperlegible Mono", ui-monospace, monospace;
+
+  --text-display: clamp(2.25rem, 1.4rem + 3vw, 3.5rem);
+  --text-display--line-height: 1.06;
+  --text-display--letter-spacing: -0.03em;
+  --text-display--font-weight: 700;
+  --text-headline: clamp(2rem, 1.2rem + 2.3vw, 3.05rem);
+  --text-headline--line-height: 1.12;
+  --text-headline--letter-spacing: -0.025em;
+  --text-headline--font-weight: 600;
+  --text-title: 1.375rem;
+  --text-title--line-height: 1.3;
+  --text-title--letter-spacing: -0.012em;
+  --text-title--font-weight: 700;
+  --text-section: 1.3125rem;
+  --text-section--line-height: 1.3;
+  --text-section--letter-spacing: -0.01em;
+  --text-section--font-weight: 700;
+  --text-body: 1.0625rem;
+  --text-body--line-height: 1.65;
+  --text-label: 0.875rem;
+  --text-label--line-height: 1.5;
+  --text-label--font-weight: 700;
+  --text-code: 0.8125rem;
+  --text-code--line-height: 1.8;
+
+  --radius-redaction: 2px;
+  --radius-kbd: 5px;
+  --radius-document: 6px;
+  --radius-note: 8px;
+  --radius-portrait: 10px;
+  --radius-toast: 12px;
+  --radius-pill: 999px;
+
+  --container-grid: 68rem;
+  --container-case: 84rem;
+  --container-measure: 38rem;
+  --container-case-measure: 40rem;
+  --spacing-gutter-page: 1.5rem;
+  --spacing-icon-gutter: 2.75rem;
+  --spacing-context-column: 11rem;
+  --spacing-row: 1.4rem;
+  --spacing-section: 3rem;
+  --spacing-block: 6rem;
+
+  --ease-enter: cubic-bezier(0.165, 0.84, 0.44, 1);
+  --ease-state: cubic-bezier(0.87, 0, 0.13, 1);
+  --ease-exit: cubic-bezier(0.7, 0, 0.84, 0);
+}
+
+/* Light is the default; dark follows the system with its own tuned values. */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-paper: var(--color-paper-dark);
+    --color-ink: var(--color-ink-dark);
+    --color-ink-muted: var(--color-ink-muted-dark);
+    --color-ink-faint: var(--color-ink-faint-dark);
+    --color-rule: var(--color-rule-dark);
+    --color-rule-strong: var(--color-rule-strong-dark);
+    --color-panel: var(--color-panel-dark);
+    --color-panel-strong: var(--color-panel-strong-dark);
+    --color-chili: var(--color-chili-dark);
+    --color-chili-soft: var(--color-chili-soft-dark);
+    --color-chili-ink: var(--color-chili-ink-dark);
+    --color-on-chili: var(--color-on-chili-dark);
+  }
+  body {
+    line-height: 1.72;
+    letter-spacing: 0.01em;
+  }
+}
+
+@layer base {
+  html {
+    background: var(--color-paper);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    font-size: 100%;
+  }
+  body {
+    background: var(--color-paper);
+    font-size: var(--text-body);
+    line-height: var(--text-body--line-height);
+    -webkit-font-smoothing: antialiased;
+  }
+  ::selection {
+    background: var(--color-chili);
+    color: var(--color-on-chili);
+  }
+  :focus-visible {
+    outline: 2px solid var(--color-chili);
+    outline-offset: 3px;
+    border-radius: 4px;
+  }
+}
+
+@layer components {
+  .landing {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: var(--spacing-block);
+    min-height: 60svh;
+    max-width: var(--container-grid);
+    margin-inline: auto;
+    padding: 2rem var(--spacing-gutter-page) 3rem;
+  }
+  .byline {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    align-self: flex-start;
+    font-size: 0.9375rem;
+    font-weight: 700;
+    line-height: var(--text-label--line-height);
+    color: var(--color-ink);
+    text-decoration: none;
+  }
+  .byline__dot {
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: var(--radius-pill);
+    background: var(--color-chili);
+    transition: transform 320ms var(--ease-state);
+  }
+  .byline:hover .byline__dot,
+  .byline:focus-visible .byline__dot {
+    transform: scale(1.7);
+  }
+  .claim {
+    max-width: 24ch;
+    font-size: var(--text-headline);
+    font-weight: 600;
+    line-height: var(--text-headline--line-height);
+    letter-spacing: var(--text-headline--letter-spacing);
+    text-wrap: balance;
+    border-bottom: 1px solid var(--color-rule);
+    padding-bottom: 2.5rem;
+  }
+
+  .contact {
+    background: var(--color-panel);
+    border-top: 1px solid var(--color-rule);
+    padding: 5rem 0 5.5rem;
+  }
+  .contact__inner {
+    max-width: var(--container-grid);
+    margin-inline: auto;
+    padding-inline: var(--spacing-gutter-page);
+  }
+  .contact__line {
+    max-width: 24ch;
+    font-size: clamp(1.75rem, 1rem + 2.3vw, 2.85rem);
+    font-weight: 600;
+    line-height: var(--text-headline--line-height);
+    letter-spacing: var(--text-headline--letter-spacing);
+    text-wrap: balance;
+  }
+  .contact__email {
+    margin-top: 1.5rem;
+    font-size: clamp(1.25rem, 1rem + 1vw, 1.75rem);
+    font-weight: 700;
+  }
+  .contact__email a {
+    color: var(--color-chili-ink);
+    text-decoration: underline;
+    text-decoration-color: var(--color-chili);
+    text-decoration-thickness: 2px;
+    text-underline-offset: 0.2em;
+    transition: background-color 320ms var(--ease-state), color 320ms var(--ease-state);
+  }
+  .contact__email a:hover {
+    background: var(--color-chili);
+    color: var(--color-on-chili);
+  }
+  .contact__elsewhere {
+    margin-top: 1.25rem;
+    max-width: var(--container-measure);
+  }
+  .contact__elsewhere a {
+    font-weight: 700;
+    color: var(--color-ink);
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
+}
