@@ -8,4 +8,4 @@ export const getStaticPaths: GetStaticPaths = async () =>
   (await loadProof()).filter(isPage).map((entry) => ({ params: { slug: entry.slug }, props: { entry } }));
 
 export const GET: APIRoute = async ({ props }) =>
-  new Response(await renderCard(pageCard(props.entry, loadSite())), { headers: { "Content-Type": "image/png" } });
+  new Response((await renderCard(pageCard(props.entry, loadSite()))) as BodyInit, { headers: { "Content-Type": "image/png" } });

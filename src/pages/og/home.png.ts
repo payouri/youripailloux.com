@@ -3,4 +3,4 @@ import { homeCard, renderCard } from "../../lib/card";
 import { loadSite } from "../../lib/site";
 
 export const GET: APIRoute = async () =>
-  new Response(await renderCard(homeCard(loadSite())), { headers: { "Content-Type": "image/png" } });
+  new Response((await renderCard(homeCard(loadSite()))) as BodyInit, { headers: { "Content-Type": "image/png" } });
