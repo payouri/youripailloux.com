@@ -2,6 +2,8 @@
 import { render, getCollection } from "astro:content";
 import CodeDocument from "../components/CodeDocument.astro";
 import ProofPage from "../layouts/ProofPage.astro";
+import AdrBlock from "../components/AdrBlock.astro";
+import MarginNote from "../components/MarginNote.astro";
 import { loadProof } from "../lib/loadProof";
 import type { PageData } from "../lib/proof";
 
@@ -13,9 +15,11 @@ export async function getStaticPaths() {
     .map((e) => ({ params: { slug: e.id }, props: { entry: e, list } }));
 }
 const { entry: raw, list } = Astro.props;
-const { Content } = await render(raw);
+const { Content, headings } = await render(raw);
 const entry = raw.data as PageData;
 // CodeDocument reads the entry's category explanations from here (one request per page).
 Astro.locals.redactions = entry.redactions;
+// MDX components usable inline in the prose, with no import in the entry.
+const mdxComponents = { pre: CodeDocument, AdrBlock, MarginNote };
 ---
-<ProofPage entry={entry} list={list}><Content components={{ pre: CodeDocument }} /></ProofPage>
+<ProofPage entry={entry} list={list} headings={headings}><Content components={mdxComponents} /></ProofPage>

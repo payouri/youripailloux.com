@@ -108,6 +108,7 @@
   --spacing-gutter-page: 1.5rem;
   --spacing-icon-gutter: 2.75rem;
   --spacing-context-column: 11rem;
+  --spacing-margin-note: 12.5rem;
   --spacing-row: 1.4rem;
   --spacing-section: 3rem;
   --spacing-block: 6rem;
@@ -356,6 +357,30 @@
     margin-inline: auto;
     padding: 2rem var(--spacing-gutter-page) var(--spacing-block);
   }
+  /* Case-study layout, from 1180px: section map | 40rem text | margin notes, in 84rem. */
+  @media (min-width: 1180px) {
+    .page {
+      display: grid;
+      grid-template-columns:
+        var(--spacing-context-column) minmax(0, var(--container-case-measure)) var(--spacing-margin-note);
+      column-gap: 2rem;
+      justify-content: center;
+      max-width: var(--container-case);
+    }
+    .page > * { grid-column: 2; }
+    .page > .byline { grid-row: 1; }
+    .page > .case { grid-row: 2; }
+    .page > .next { grid-row: 3; }
+    .page > .sections {
+      display: block;
+      grid-column: 1;
+      grid-row: 2;
+      align-self: start;
+      position: sticky;
+      top: 2rem;
+      margin-top: var(--spacing-block);
+    }
+  }
   .case { margin-top: var(--spacing-block); max-width: var(--container-case-measure); }
   .case__title {
     font-size: var(--text-display);
@@ -376,16 +401,123 @@
     text-decoration: underline;
     text-underline-offset: 0.2em;
   }
-  .prose { margin-top: var(--spacing-section); }
+  /* Prose: the hand-written layer for the MDX body. 17px, 1.65; 1.72 in dark. */
+  .prose {
+    margin-top: var(--spacing-section);
+    font-size: var(--text-body);
+    line-height: var(--text-body--line-height);
+    text-wrap: pretty;
+  }
+  @media (prefers-color-scheme: dark) {
+    .prose { line-height: 1.72; letter-spacing: 0.01em; }
+  }
   .prose h2 {
     margin-top: var(--spacing-section);
     font-size: var(--text-section);
     font-weight: var(--text-section--font-weight);
     line-height: var(--text-section--line-height);
     letter-spacing: var(--text-section--letter-spacing);
+    text-wrap: balance;
+    scroll-margin-top: 2rem;
   }
   .prose h2:first-child { margin-top: 0; }
   .prose p { margin-top: 1rem; }
+  .prose strong { font-weight: 700; }
+  .prose :not(pre) > code { font-family: var(--font-mono); font-size: 0.9em; }
+  .prose ul, .prose ol { margin-top: 1rem; padding-inline-start: 1.25rem; }
+  .prose ul { list-style: disc; }
+  .prose ol { list-style: decimal; }
+  .prose li + li { margin-top: 0.4rem; }
+
+  /* Margin note: an inline panel below 1180px, the right margin from 1180px. */
+  .margin-note {
+    margin-block: 1.5rem;
+    padding: 0.75rem 1rem;
+    background: var(--color-panel);
+    border-radius: var(--radius-note);
+    font-size: 0.8125rem;
+    line-height: 1.5;
+    color: var(--color-ink-faint);
+  }
+  .margin-note__lead { display: block; font-weight: 700; color: var(--color-ink); }
+  .margin-note__body > :first-child { margin-top: 0; }
+  .margin-note__body > :last-child { margin-bottom: 0; }
+  @media (min-width: 1180px) {
+    /* Floated into the right margin, 2rem clear of the text column. The negative
+       margin lets the float's box extend into the margin without taking any line width. */
+      .margin-note {
+        float: right;
+        width: var(--spacing-margin-note);
+        margin-block: 0.25rem 1rem;
+        margin-inline: 0 calc(-1 * (var(--spacing-margin-note) + 2rem));
+        padding: 0;
+        background: none;
+        border-radius: 0;
+      }
+  }
+
+  /* ADR block: a bordered figure, never shadowed. */
+  .adr {
+    margin-block: 2rem;
+    border: 1px solid var(--color-rule-strong);
+    border-radius: var(--radius-document);
+    padding: 1rem 1.25rem 1.25rem;
+  }
+  .adr__head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.5rem 1rem;
+  }
+  .adr__caption {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    line-height: 1.5;
+    color: var(--color-ink-muted);
+  }
+  .adr__status {
+    font-size: var(--text-label);
+    font-weight: 700;
+    line-height: var(--text-label--line-height);
+    color: var(--color-ink);
+    border-radius: var(--radius-pill);
+    box-shadow: inset 0 0 0 1px var(--color-rule-strong);
+    padding: 0.1rem 0.75rem;
+  }
+  .adr__number::after { content: "·"; margin-inline: 0.6ch; }
+  .adr__passage {
+    margin: 0.75rem 0 0;
+    padding: 0;
+    border: 0;
+  }
+  .adr__passage > :first-child { margin-top: 0; }
+
+  /* Section map: from 1180px, sticky in the left zone of the case-study grid. */
+  .sections { display: none; }
+  .sections__label { font-size: var(--text-label); font-weight: 700; color: var(--color-ink-faint); }
+  .sections__track { position: relative; margin-top: 0.75rem; padding-inline-start: 1rem; }
+  .sections__dot {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 0.45rem;
+    height: 0.45rem;
+    border-radius: var(--radius-pill);
+    background: var(--color-chili);
+    transition: transform 420ms var(--ease-state);
+  }
+  .sections__list { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.45rem; }
+  .sections__list a {
+    font-size: 0.9375rem;
+    line-height: 1.4;
+    color: var(--color-ink-faint);
+    text-decoration: none;
+    transition: color 320ms var(--ease-state);
+  }
+  .sections__list a:hover,
+  .sections__list a:focus-visible { color: var(--color-ink); text-decoration: underline; text-underline-offset: 0.2em; }
+  .sections__list a[aria-current="location"] { color: var(--color-ink); font-weight: 700; }
 
   /* Code document (DESIGN.md): a bordered file with no fill. Chili appears only as a redaction's hover state. */
   :root {

@@ -1,0 +1,12 @@
+---
+// An ADR excerpt: number, title, status and the quoted passage. A bordered figure, never shadowed.
+interface Props { number: string; title: string; status: string }
+const { number, title, status } = Astro.props;
+---
+<figure class="adr" data-adr>
+  <figcaption class="adr__head">
+    <span class="adr__caption"><span class="adr__number">ADR {number}</span><span class="adr__title">{title}</span></span>
+    <span class="adr__status" data-adr-status>{status}</span>
+  </figcaption>
+  <blockquote class="adr__passage" data-adr-passage><slot /></blockquote>
+</figure>

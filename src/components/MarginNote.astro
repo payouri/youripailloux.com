@@ -1,0 +1,10 @@
+---
+// A short aside beside the prose: where a number comes from, how agents were used,
+// what a redaction hides. Right margin on wide screens, an inline panel on narrow ones.
+interface Props { lead?: string }
+const { lead } = Astro.props;
+---
+<div class="margin-note" role="note" data-margin-note>
+  {lead && <strong class="margin-note__lead">{lead}</strong>}
+  <div class="margin-note__body"><slot /></div>
+</div>

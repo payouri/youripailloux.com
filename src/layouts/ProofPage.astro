@@ -1,12 +1,16 @@
 ---
 import Base from "./Base.astro";
+import SectionMap from "../components/SectionMap.astro";
 import { loadSite } from "../lib/site";
 import { nextPage, supportLabel, type PageData, type ProofData } from "../lib/proof";
 
-interface Props { entry: PageData; list: ProofData[] }
-const { entry, list } = Astro.props;
+interface Heading { depth: number; slug: string; text: string }
+interface Props { entry: PageData; list: ProofData[]; headings?: Heading[] }
+const { entry, list, headings = [] } = Astro.props;
 const site = loadSite();
 const next = nextPage(list, entry);
+// The section map lists the body's h2s, and only those.
+const sections = headings.filter((h) => h.depth === 2).map((h) => ({ slug: h.slug, text: h.text }));
 ---
 <Base site={site} title={`${entry.title} · ${site.name}`} description={entry.summary}>
   <main class="page" id="main" data-kind={entry.kind}>
@@ -14,6 +18,7 @@ const next = nextPage(list, entry);
       <span class="byline__dot" aria-hidden="true"></span>
       <span data-byline>{site.name} · {site.role}</span>
     </a>
+    {sections.length > 0 && <SectionMap sections={sections} />}
     <article class="case">
       <h1 class="case__title">{entry.title}</h1>
       <p class="case__context" data-context>{entry.context.employer} · {entry.context.year}</p>

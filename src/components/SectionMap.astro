@@ -1,0 +1,75 @@
+---
+// The section map: one link per body h2, generated from the body's headings at build time.
+// Visible from 1180px only. A chili dot follows the section in view while the page scrolls.
+interface Props { sections: { slug: string; text: string }[] }
+const { sections } = Astro.props;
+---
+<nav class="sections" aria-label="Sections" data-section-map>
+  <p class="sections__label">Contents</p>
+  <div class="sections__track">
+    <span class="sections__dot" aria-hidden="true" data-section-dot></span>
+    <ul class="sections__list" role="list">
+      {sections.map((s) => (
+        <li><a href={`#${s.slug}`} data-section-link={s.slug}>{s.text}</a></li>
+      ))}
+    </ul>
+  </div>
+</nav>
+
+<script>
+  const map = document.querySelector<HTMLElement>("[data-section-map]");
+  if (map) {
+    const dot = map.querySelector<HTMLElement>("[data-section-dot]")!;
+    const links = [...map.querySelectorAll<HTMLAnchorElement>("[data-section-link]")];
+    const headings = links
+      .map((a) => document.getElementById(a.dataset.sectionLink ?? ""))
+      .filter((el): el is HTMLElement => el !== null);
+    let active = -1;
+
+    // Place the dot against the active link's line, and mark that link for AT and CSS.
+    const show = (index: number) => {
+      const link = links[index];
+      if (!link) return;
+      if (index !== active) {
+        active = index;
+        links.forEach((other, i) => {
+          if (i === index) {
+            other.setAttribute("aria-current", "location");
+            other.setAttribute("data-active", "");
+          } else {
+            other.removeAttribute("aria-current");
+            other.removeAttribute("data-active");
+          }
+        });
+      }
+      // Measured on every call, so a resize that re-wraps the links keeps the dot on its line.
+      const y = link.offsetTop + (link.offsetHeight - dot.offsetHeight) / 2;
+      dot.style.transform = `translateY(${y}px)`;
+    };
+
+    // The active section is the last heading that has scrolled past the upper third
+    // of the viewport. At the foot of the page, the last section is active.
+    const update = () => {
+      const line = window.innerHeight * 0.33;
+      let index = 0;
+      headings.forEach((h, i) => {
+        if (h.getBoundingClientRect().top <= line) index = i;
+      });
+      const atFoot = window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 4;
+      if (atFoot) index = headings.length - 1;
+      show(index);
+    };
+
+    let frame = 0;
+    const schedule = () => {
+      if (frame) return;
+      frame = requestAnimationFrame(() => {
+        frame = 0;
+        update();
+      });
+    };
+    window.addEventListener("scroll", schedule, { passive: true });
+    window.addEventListener("resize", schedule);
+    update();
+  }
+</script>
