@@ -3,7 +3,7 @@ import type { CollectionEntry } from "astro:content";
 
 /** Derived from the zod schema in content.config.ts, so the two cannot drift apart. */
 export type ProofData = CollectionEntry<"proof">["data"];
-export type PageData = Extract<ProofData, { kind: "case-study" | "tool" }>;
+export type PageData = Exclude<ProofData, { kind: "shelf" }>;
 export type Support = ProofData["support"];
 
 export const supportLabel: Record<Support, string> = {
@@ -14,7 +14,7 @@ export const supportLabel: Record<Support, string> = {
 /** Slugs that belong to the site itself. */
 const reserved = new Set(["index", "404", "robots.txt", "blog", "_astro"]);
 
-export const isPage = (e: ProofData): e is PageData => e.kind !== "shelf";
+export const isPage = <T extends ProofData>(e: T): e is Exclude<T, { kind: "shelf" }> => e.kind !== "shelf";
 
 /** Published entries in rank order. Ranks and slugs must be unique. */
 export function ordered<T extends ProofData>(entries: readonly T[]): T[] {
