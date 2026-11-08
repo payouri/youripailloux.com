@@ -1,33 +1,10 @@
 /** Pure rules for the proof collection: rank order, page set, "next" chain. */
+import type { CollectionEntry } from "astro:content";
 
-export type Support = "platform" | "dx";
-export type Kind = "case-study" | "tool" | "shelf";
-
-export interface ProofBase {
-  kind: Kind;
-  rank: number;
-  title: string;
-  summary: string;
-  support: Support;
-  redactions: Record<string, string>;
-}
-export interface PageFields {
-  slug: string;
-  context: { employer: string; year: number };
-  attribution: string;
-}
-export type CaseStudy = ProofBase & PageFields & { kind: "case-study" };
-export type Tool = ProofBase &
-  PageFields & {
-    kind: "tool";
-    friction: string;
-    users: string;
-    repo: string;
-    adrs: { title: string; href: string }[];
-  };
-export type Shelf = ProofBase & { kind: "shelf"; href: string; path: string };
-export type ProofData = CaseStudy | Tool | Shelf;
-export type PageData = CaseStudy | Tool;
+/** Derived from the zod schema in content.config.ts, so the two cannot drift apart. */
+export type ProofData = CollectionEntry<"proof">["data"];
+export type PageData = Extract<ProofData, { kind: "case-study" | "tool" }>;
+export type Support = ProofData["support"];
 
 export const supportLabel: Record<Support, string> = {
   platform: "Builds and operates the platform underneath",
