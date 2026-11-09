@@ -21,7 +21,8 @@ function move(delta: 1 | -1) {
   const onList = list[0]?.matches("a");
   const active = document.activeElement;
   // On a case study the scroll position decides, not a heading left focused by an earlier press.
-  const current = onList ? list.findIndex((el) => el === active || el.contains(active)) : currentSection(list);
+  // Above the first heading there is no current section yet, so `j` goes to the first one.
+  const current = onList ? list.findIndex((el) => el === active || el.contains(active)) : currentSection(list, -1);
   const next = list[stepIndex(current, delta, list.length)];
   if (!next) return;
   next.focus({ preventScroll: true });

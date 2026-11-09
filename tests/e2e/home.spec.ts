@@ -65,10 +65,11 @@ test("no client router or framework runtime ships", async ({ page }) => {
   const scripts: string[] = [];
   page.on("request", (r) => r.resourceType() === "script" && scripts.push(r.url()));
   await page.goto("/");
-  // Only small first-party scripts (the contact block's copy, toast and clock; the shortcuts); nothing from a framework or router.
+  // Only small first-party scripts (the contact block's copy, toast and clock; the shortcuts, and the
+  // section rule they share with the section map); nothing from a framework or router.
   // The analytics loader is small too; posthog-js itself is the one big script, loaded lazily as its own chunk (ADR 0004).
   for (const url of scripts) {
-    expect(url).toMatch(/\/_astro\/(ContactBlock|Base|reduced-motion|analytics|module)[^/]*\.js$/);
+    expect(url).toMatch(/\/_astro\/(ContactBlock|Base|reduced-motion|analytics|sections|module)[^/]*\.js$/);
     if (/\/_astro\/module/.test(url)) continue;
     const body = await (await page.request.get(url)).text();
     expect(body.length).toBeLessThan(4000);
