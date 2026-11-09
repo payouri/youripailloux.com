@@ -1,0 +1,11 @@
+.git
+.github
+node_modules
+dist
+dist-test
+.astro
+test-results
+playwright-report
+.env
+Dockerfile
+.dockerignore

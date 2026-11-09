@@ -1,0 +1,43 @@
+# Serves the static build and proxies /ingest to PostHog's EU cloud (ADR 0004).
+#
+# Runs behind Coolify's proxy, which terminates TLS, and usually behind Cloudflare. The reader's IP
+# matters: cookieless mode counts visitors by a server-side hash of IP and user agent, so PostHog
+# must see the reader's address, not this server's. Requests from the proxies in front (private
+# ranges) are trusted to name the client: Cloudflare's CF-Connecting-IP first, then X-Forwarded-For.
+{
+	admin off
+	servers {
+		trusted_proxies static private_ranges
+		client_ip_headers CF-Connecting-IP X-Forwarded-For
+	}
+}
+
+(posthog) {
+	header_up X-Forwarded-For {client_ip}
+	header_down -Set-Cookie
+}
+
+:80 {
+	encode zstd gzip
+
+	# PostHog's lazily loaded scripts, then its API. Nothing it answers may set a cookie.
+	handle /ingest/static/* {
+		uri strip_prefix /ingest
+		reverse_proxy https://eu-assets.i.posthog.com {
+			import posthog
+		}
+	}
+	handle /ingest/* {
+		uri strip_prefix /ingest
+		reverse_proxy https://eu.i.posthog.com {
+			import posthog
+		}
+	}
+
+	handle {
+		root * /srv
+		# Hashed file names: safe to cache forever.
+		header /_astro/* Cache-Control "public, max-age=31536000, immutable"
+		file_server
+	}
+}
